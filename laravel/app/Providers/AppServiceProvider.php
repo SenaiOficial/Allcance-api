@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Validator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+         Validator::extend('valid_cpf', function ($attribute, $value, $parameters, $validator) {
+        $phoneUtil = \libphonenumber\PhoneNumberUtil::getInstance();
+        try {
+            $cpf = $phoneUtil->parse($value, "BR");
+            return $phoneUtil->isValidNumber($cpf);
+        } catch (\libphonenumber\NumberFormatException $e) {
+            return false;
+        }
+    });
     }
 }
