@@ -3,16 +3,11 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Users;
+use App\Models\User;
 
 class UserFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array
-     */
-    protected $model = Users::class;
+    protected $model = User::class;
     
     public function definition()
     {
