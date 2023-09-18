@@ -11,7 +11,7 @@ class User extends Model
 
     protected $table = 'users';
 
-    protected $fillabel = [
+    protected $fillable = [
         'first_name',
         'last_name',
         'phone_number',
@@ -20,8 +20,8 @@ class User extends Model
         'marital_status',
         'gender',
         'email',
-        'password'
-    ];
+        'password',
+    ];  
 
     public function orders()
     {
