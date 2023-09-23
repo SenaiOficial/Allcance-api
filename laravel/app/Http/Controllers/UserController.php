@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -22,9 +23,11 @@ class UserController extends Controller
 
     public function store(RegisterRequest $request)
 {
-    $validatedData = $request->validated();
-
     try {
+        $validatedData = $request->validated();
+        
+        $validatedData['password'] = Hash::make($validatedData['password']);
+        
         $user = User::create($validatedData);
 
         if (!$user) {
@@ -43,6 +46,7 @@ class UserController extends Controller
     public function update(RegisterRequest $request, User $user)
     {
         $validatedData = $request->validated();
+        
         $user->update($validatedData);
 
         return response()->json(['message' => 'Usuário atualizado com sucesso']);
