@@ -17,7 +17,7 @@ class RegisterRequest extends FormRequest
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'max:20'],
-            'cpf' => ['required'],
+            'cpf' => ['required', 'unique:users', 'regex:/^\d{3}\.\d{3}\.\d{3}\-\d{2}$/', 'min:11', 'max:14'],
             'date_of_birth' => ['required', 'date'],
             'marital_status' => ['required', 'string', 'max:255'],
             'gender' => ['required', 'string', 'max:255'],
