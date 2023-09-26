@@ -16,6 +16,10 @@ use App\Http\Controllers\UserController;
 |
 */
 
+Route::get('/', function () {
+    return "It's alive!";
+});
+
 Route::get('/users', function () {
     return User::all();
 });
