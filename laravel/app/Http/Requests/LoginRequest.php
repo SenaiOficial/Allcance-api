@@ -14,7 +14,7 @@ class LoginRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -32,16 +32,11 @@ class LoginRequest extends FormRequest
 
     public function getCredentials()
     {
-        $email = $this->get('email');
+        $credentials = $this->only('email', 'password');
 
-        if ($this->isEmail($email)) {
-            return [
-                'email' => $email,
-                'password' => $this->get('password')
-            ];
-        }
+        $credentials['email'] = strtolower($credentials['email']);
 
-        return $this->only('email', 'password');
+        return $credentials;
     }
 
     private function isEmail($param)
