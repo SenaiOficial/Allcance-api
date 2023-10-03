@@ -21,7 +21,7 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::middleware('custom_token')->get('/users', function () {
+Route::get('/users', function () {
     return User::all();
 });
 
