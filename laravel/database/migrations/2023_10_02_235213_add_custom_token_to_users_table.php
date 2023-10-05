@@ -26,7 +26,7 @@ class AddCustomTokenToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            //
+            $table->string('custom_token')->nullable();
         });
     }
 }
