@@ -3,8 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
+use App\Models\Address;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AddressController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,12 @@ Route::get('/', function () {
 Route::get('/users', function () {
     return User::all();
 });
+
+Route::get('/addresses', function () {
+    return Address::all();
+});
+
+Route::get('/users/{userId}/addresses', [UserController::class, 'showAddresses']);
 
 Route::post('/user', [UserController::class, 'store']);
 
