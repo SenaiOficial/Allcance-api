@@ -22,6 +22,7 @@ class User extends Model implements Authenticatable
         'gender',
         'email',
         'password',
+        'custom_token'
     ];  
 
     public function orders()

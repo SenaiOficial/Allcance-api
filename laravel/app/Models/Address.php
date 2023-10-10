@@ -23,7 +23,7 @@ class Address extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function scopeCity($query, $city)
@@ -31,4 +31,3 @@ class Address extends Model
         return $query->where('city', $city);
     }
 }
-
