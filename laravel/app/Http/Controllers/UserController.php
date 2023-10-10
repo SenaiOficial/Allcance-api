@@ -37,7 +37,7 @@ class UserController extends Controller
             }
 
             Log::info('Usuário criado com sucesso');
-            return response()->json(['message' => 'Usuário criado com sucesso']);
+            return response()->json(['message' => 'Usuário criado com sucesso', 'user_id' => $user->id]);
         } catch (\Exception $e) {
             Log::error('Erro ao criar usuário: ' . $e->getMessage());
             return response()->json(['errors' => $e->getMessage()], 500);
@@ -77,5 +77,18 @@ class UserController extends Controller
         $user->delete();
 
         return response()->json(['message' => 'Usuário excluído com sucesso']);
+    }
+
+    public function showAddresses($userId)
+    {
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        }
+
+        $addresses = $user->addresses;
+
+        return response()->json(['addresses' => $addresses]);
     }
 }

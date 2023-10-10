@@ -20,7 +20,11 @@ Route::get('/addresses', function () {
     return Address::all();
 });
 
+Route::get('/users/{userId}/addresses', [UserController::class, 'showAddresses']);
+
 Route::post('/user', [UserController::class, 'store']);
+
+Route::post('/address/{userId}', [AddressController::class, 'store']);
 
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
