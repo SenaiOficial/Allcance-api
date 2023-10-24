@@ -19,7 +19,7 @@ class LoginController extends Controller
         $credentials = $request->getCredentials();
     
         if (!Auth::validate($credentials)) {
-            return response()->json(['error' => 'Email ou senha incorretos'], 401);
+            return response()->json(['error' => 'Email ou senha inválidos!'], 401);
         }
     
         $user = Auth::getProvider()->retrieveByCredentials($credentials);
@@ -30,7 +30,7 @@ class LoginController extends Controller
     
         $user->update(['custom_token' => $customToken]);
     
-        return response()->json(['message' => 'Você foi logado com sucesso', 'custom_token' => $customToken], 200);
+        return response()->json(['message' => 'Você foi logado com sucesso!', 'custom_token' => $customToken], 200);
     }
     
     //     $credentials = $request->getCredentials();
