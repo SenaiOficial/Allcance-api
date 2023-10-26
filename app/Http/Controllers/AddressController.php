@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Address;
 use Illuminate\Routing\Controller;
 use App\Http\Requests\AddressRequest;
@@ -25,8 +24,7 @@ class AddressController extends Controller
             $address->user_id = $userId;
             $address->save();
 
-
-            return response()->json(['message' => 'Endereço criado com sucesso']);
+            return response()->json(['message' => 'Cadastrado com sucesso!']);
         } catch (\Exception $e) {
             Log::error('Erro ao criar endereço: ' . $e->getMessage());
             return response()->json(['errors' => $e->getMessage()], 500);
