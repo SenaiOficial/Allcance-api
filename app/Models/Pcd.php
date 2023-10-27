@@ -9,7 +9,7 @@ class Pcd extends Model
 {
     use HasFactory;
 
-    protected $table = 'pcd';
+    protected $table = 'pcd_camps';
     protected $primaryKey = 'id';
     protected $fillable = [
         'color',
@@ -19,4 +19,9 @@ class Pcd extends Model
         'pcd_acquired',
         'needed_assistance'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

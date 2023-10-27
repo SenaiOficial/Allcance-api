@@ -27,7 +27,8 @@ class PcdRequest extends FormRequest
             'pcd_type' => ['required', 'string', 'max:255'],
             'pcd' => ['required', 'string', 'max:255'],
             'pcd_acquired' => ['required', 'boolean'],
-            'needed_assistance' => ['required', 'boolean']
+            'needed_assistance' => ['required', 'boolean'],
+            'user_id' => ['required', 'exists:users,id'],
         ];
     }
 }

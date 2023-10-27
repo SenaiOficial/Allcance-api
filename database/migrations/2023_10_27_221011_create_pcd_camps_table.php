@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pcd', function (Blueprint $table) {
+        Schema::create('pcd_camps', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('color');
             $table->boolean('job');
             $table->string('pcd_type');
@@ -20,6 +21,8 @@ return new class extends Migration
             $table->boolean('pcd_acquired');
             $table->boolean('needed_assistance');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -28,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pcd');
+        Schema::dropIfExists('pcd_camps');
     }
 };
