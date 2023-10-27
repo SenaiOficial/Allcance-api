@@ -26,7 +26,6 @@ class AddressController extends Controller
 
             return response()->json(['message' => 'Cadastrado com sucesso!']);
         } catch (\Exception $e) {
-            Log::error('Erro ao criar endereço: ' . $e->getMessage());
             return response()->json(['errors' => $e->getMessage()], 500);
         }    
     }

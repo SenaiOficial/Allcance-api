@@ -16,7 +16,10 @@ class PcdController extends Controller
     public function store(PcdRequest $request, $userId)
     {
         try {
+            $validatedData = $request->validated();
+
             $pcd = new Pcd();
+            $pcd->fill($validatedData);
             $pcd->user_id = $userId;
             $pcd->save();
 
@@ -24,6 +27,5 @@ class PcdController extends Controller
         } catch (\Exception $e) {
             return response()->json(['errors'=> $e->getMessage()], 500);
         }
-
     }
 }
