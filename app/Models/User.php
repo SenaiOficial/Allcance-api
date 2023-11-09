@@ -25,16 +25,6 @@ class User extends Model implements Authenticatable
         'custom_token'
     ];  
 
-    public function orders()
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function profile()
-    {
-        return $this->hasOne(Profile::class);
-    }
-
     public function getAge()
     {
         return now()->diffInYears($this->date_of_birth);
