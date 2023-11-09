@@ -4,13 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
 
-class User extends Model implements Authenticatable
+class UserStandar extends Model
 {
     use HasFactory;
 
-    protected $table = 'users';
+    protected $table = 'standar_user';
 
     protected $fillable = [
         'first_name',
@@ -20,15 +19,12 @@ class User extends Model implements Authenticatable
         'date_of_birth',
         'marital_status',
         'gender',
+        'state',
+        'city',
         'email',
         'password',
         'custom_token'
-    ];  
-
-    public function getAge()
-    {
-        return now()->diffInYears($this->date_of_birth);
-    }
+    ];
 
     public function getAuthIdentifierName()
     {
