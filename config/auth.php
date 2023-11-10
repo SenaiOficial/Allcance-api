@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+
+        'standar' => [
+            'driver' => 'session',
+            'provider' => 'standar_user',
+        ],
     ],
 
     /*
@@ -65,10 +70,19 @@ return [
             'model' => App\Models\User::class,
         ],
 
+        'standar_user' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\UserStandar::class, // Certifique-se de ajustar o namespace e o nome do modelo
+        ],
+
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
         // ],
+        'users_standar' => [
+            'driver' => 'multi', // Alterado para 'multi' para suportar vários providers
+            'providers' => ['users', 'standar_user'],
+        ],
     ],
 
     /*
@@ -93,6 +107,13 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
+    ],
+
+    'standar_user' => [
+        'provider' => 'standar_user',
+        'table' => 'password_resets_standar',
+        'expire' => 60,
+        'throttle' => 60,
     ],
 
     /*
