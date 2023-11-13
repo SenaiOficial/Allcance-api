@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Routing\Controller;
 use App\Http\Requests\AddressRequest;
+use App\Models\User;
 
 class AddressController extends Controller
 {
@@ -28,5 +29,19 @@ class AddressController extends Controller
         } catch (\Exception $e) {
             return response()->json(['errors' => $e->getMessage()], 500);
         }    
+    }
+
+    //Apenas usuários PCDS precisam cadastrar endereço
+    public function showAddresses($userId)
+    {
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        }
+
+        $addresses = $user->addresses;
+
+        return response()->json(['addresses' => $addresses]);
     }
 }

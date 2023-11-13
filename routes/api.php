@@ -4,12 +4,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
 use App\Models\Address;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PcdController;
-use App\Http\Controllers\UserStandarController;
-use App\Http\Controllers\UserAdminController;
+use App\Http\Controllers\RegisterController;
 
 Route::get('/', function () {
     return "It's alive!";
@@ -23,13 +21,13 @@ Route::get('/addresses', function () {
     return Address::all();
 });
 
-Route::get('/users/{userId}/addresses', [UserController::class, 'showAddresses']);
+Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
 
-Route::post('/user', [UserController::class, 'store']);
+Route::post('/user', [RegisterController::class, 'userPcd']);
 
-Route::post('/user-standar', [UserStandarController::class, 'store']);
+Route::post('/user-standar', [RegisterController::class, 'userStandar']);
 
-Route::post('/user-admin', [UserAdminController::class, 'store']);
+Route::post('/user-admin', [RegisterController::class, 'userAdmin']);
 
 Route::post('/address/{userId}', [AddressController::class, 'store']);
 

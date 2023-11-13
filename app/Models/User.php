@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable;
+use App\Models\Address;
 
 class User extends Model implements Authenticatable
 {
@@ -58,5 +59,10 @@ class User extends Model implements Authenticatable
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+    
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'user_id', 'id');
     }
 }
