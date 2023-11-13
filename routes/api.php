@@ -9,6 +9,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PcdController;
 use App\Http\Controllers\UserStandarController;
+use App\Http\Controllers\UserAdminController;
 
 Route::get('/', function () {
     return "It's alive!";
@@ -26,7 +27,9 @@ Route::get('/users/{userId}/addresses', [UserController::class, 'showAddresses']
 
 Route::post('/user', [UserController::class, 'store']);
 
-Route::post('/user-standar', [UserStandarController::class,'store']);
+Route::post('/user-standar', [UserStandarController::class, 'store']);
+
+Route::post('/user-admin', [UserAdminController::class, 'store']);
 
 Route::post('/address/{userId}', [AddressController::class, 'store']);
 
