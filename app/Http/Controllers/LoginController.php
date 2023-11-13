@@ -20,17 +20,13 @@ class LoginController extends Controller
 
         if (Auth::guard('web')->attempt($credentials)) {
             $user = Auth::guard('web')->user();
-        }
-
-        if (Auth::guard('standar')->attempt($credentials)) {
+        } elseif (Auth::guard('standar')->attempt($credentials)) {
             $user = Auth::guard('standar')->user();
-        }
-
-        if (Auth::guard('admin')->attempt($credentials)) {
+        } elseif (Auth::guard('admin')->attempt($credentials)) {
             $user = Auth::guard('admin')->user();
         }
 
-        if (!$user) {
+        else {
             return response()->json(['error' => 'Email ou senha inválidos!'], 401);
         }
 
