@@ -31,30 +31,13 @@ class LoginController extends Controller
         }
 
         if ($user) {
-
             $customToken = Str::random(60);
-
             $user->update(['custom_token' => $customToken]);
-
             return response()->json(['message' => 'Você foi logado com sucesso!', 'custom_token' => $customToken], 200);
         } else {
             return response()->json(['error' => 'Erro ao obter informações do usuário.'], 500);
         }
     }
-
-    //     $credentials = $request->getCredentials();
-
-    //     if(!Auth::validate($credentials)):
-    //         return redirect()->to('login')
-    //             ->withErrors(trans('auth.failed'));
-    //     endif;
-
-    //     $user = Auth::getProvider()->retrieveByCredentials($credentials);
-
-    //     Auth::login($user);
-
-    //     return $this->authenticated($request, $user);
-    // }    
 
     protected function authenticated(Request $request, $user)
     {
