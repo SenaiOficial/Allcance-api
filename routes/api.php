@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PcdController;
 use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\TokenController;
 
 Route::get('/', function () {
     return "It's alive!";
@@ -22,6 +23,8 @@ Route::get('/addresses', function () {
 });
 
 Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
+
+Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
 Route::post('/user', [RegisterController::class, 'userPcd']);
 
