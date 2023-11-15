@@ -23,4 +23,20 @@ class TokenController extends Controller
 
         return response()->json(['token:' => $randomToken], 200);
     }
+
+    public function validateToken(Request $request)
+    {
+        try {
+            $providedToken = $request->input('pass_code');
+            $storedToken = InstitutionalToken::first()->institutional_token;
+
+            if ($providedToken !== $storedToken) {
+                return response()->json(['error' => 'Token inválido'], 400);
+            }
+
+            return response()->json(['message' => 'Token válido'], 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao validar o token'], 500);
+        }
+    }
 }

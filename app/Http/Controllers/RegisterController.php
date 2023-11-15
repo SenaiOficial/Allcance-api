@@ -11,6 +11,7 @@ use App\Http\Requests\RegisterStandarUser;
 use App\Http\Requests\RegisterAdminRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\InstitutionalToken;
 
 class RegisterController extends Controller
 {
@@ -29,6 +30,15 @@ class RegisterController extends Controller
             $validatedData = $request->validated();
 
             $validatedData['password'] = Hash::make($validatedData['password']);
+
+            if($request->has('pass_code')) {
+                $providedToken = $validatedData['pass_code'];
+                $storedToken = InstitutionalToken::first()->institutional_token;
+                
+                if ($providedToken !== $storedToken) {
+                    return response()->json(['error' => 'Token inválido'], 400);
+                }
+            }
 
             $user = $model::create($validatedData);
 
