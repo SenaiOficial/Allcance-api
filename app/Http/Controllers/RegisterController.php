@@ -6,12 +6,13 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserStandar;
 use App\Models\UserAdmin;
+use App\Models\UserPcd;
+use App\Models\InstitutionalToken;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\RegisterStandarUser;
 use App\Http\Requests\RegisterAdminRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
-use App\Models\InstitutionalToken;
 
 class RegisterController extends Controller
 {
@@ -41,7 +42,7 @@ class RegisterController extends Controller
             }
 
             $user = $model::create($validatedData);
-
+            
             if(!$user) {
                 Log::error('Erro ao criar usuário');
                 return response()->json(['error' => 'Erro ao criar usuário']);
@@ -57,7 +58,7 @@ class RegisterController extends Controller
 
     public function userPcd(RegisterRequest $request)
     {
-        return $this->store($request, User::class);
+        return $this->store($request, UserPcd::class);
     }
     public function userStandar(RegisterStandarUser $request)
     {

@@ -31,7 +31,6 @@ class AddressRequest extends FormRequest
             'street' => ['required', 'string', 'max:255'],
             'street_number' => ['required', 'string', 'max:255'],
             'street_complement' => ['required', 'string', 'max:255'],
-            'user_id' => ['required', 'exists:users,id'],
         ];
     }
 }

@@ -28,6 +28,19 @@ class RegisterRequest extends FormRequest
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             ],
+            'cep' => ['required', 'string', 'max:255'],
+            'country' => ['required', 'string', 'max:255'],
+            'state' => ['required', 'string', 'max:255'],
+            'city' => ['required', 'string', 'max:255'],
+            'street' => ['required', 'string', 'max:255'],
+            'street_number' => ['required', 'string', 'max:255'],
+            'street_complement' => ['required', 'string', 'max:255'],
+            'color' => ['required', 'string', 'max:255'],
+            'job' => ['required', 'boolean'],
+            'pcd_type' => ['required', 'string', 'max:255'],
+            'pcd' => ['required', 'string', 'max:255'],
+            'pcd_acquired' => ['required', 'boolean'],
+            'needed_assistance' => ['required', 'boolean'],
         ];
     }
 }

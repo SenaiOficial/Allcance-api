@@ -14,19 +14,11 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::get('/users', function () {
-    return User::all();
-});
-
-Route::get('/addresses', function () {
-    return Address::all();
-});
-
 Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
 
 Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-Route::post('/user', [RegisterController::class, 'userPcd']);
+Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 
 Route::post('/user-standar', [RegisterController::class, 'userStandar']);
 
