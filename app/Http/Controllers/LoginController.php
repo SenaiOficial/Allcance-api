@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Http\Controllers\CookieController;
 
 class LoginController extends Controller
 {
@@ -32,8 +33,8 @@ class LoginController extends Controller
 
         if ($user) {
             $customToken = Str::random(60);
-            $user->update(['custom_token' => $customToken]);
-            return response()->json(['message' => 'Você foi logado com sucesso!', 'custom_token' => $customToken], 200);
+            $cookieController = app(CookieController::class);
+            return $cookieController->setAcessToken($customToken);
         } else {
             return response()->json(['error' => 'Erro ao obter informações do usuário.'], 500);
         }
