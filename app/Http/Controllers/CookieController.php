@@ -9,7 +9,7 @@ class CookieController extends Controller
 {
     public function setAcessToken($acessToken)
     {
-        $cookie = Cookie::make('custom_token', $acessToken, 480);
+        $cookie = Cookie::make('custom_token', $acessToken, 480, '/');
         
         return response()->json(['message' => 'Sessão iniciada', 'acess_token' => $acessToken])->withCookie($cookie);
     }
