@@ -13,6 +13,8 @@ use App\Http\Requests\RegisterStandarUser;
 use App\Http\Requests\RegisterAdminRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\CookieController;
+use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -47,6 +49,13 @@ class RegisterController extends Controller
                 Log::error('Erro ao criar usuário');
                 return response()->json(['error' => 'Erro ao criar usuário']);
             }
+
+            $acessToken = Str::random(60);
+
+            $user->update(['custom_token' => $acessToken]);
+
+            $cookieController = app(CookieController::class);
+            $cookieController->setAcessToken($acessToken);
 
             Log::info('Usuário criado com sucesso');
             return response()->json(['message' => 'Usuário criado com sucesso', 'user_id' => $user->id]);
