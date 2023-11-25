@@ -38,6 +38,10 @@ class UserPcd extends Model implements Authenticatable
         'custom_token'
     ];
 
+    protected $casts = [
+        'pcd' => 'array'
+    ];
+
     public function getAge()
     {
         return now()->diffInYears($this->date_of_birth);

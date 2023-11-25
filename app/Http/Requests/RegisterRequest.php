@@ -38,7 +38,7 @@ class RegisterRequest extends FormRequest
             'color' => ['required', 'string', 'max:255'],
             'job' => ['required', 'boolean'],
             'pcd_type' => ['required', 'string', 'max:255'],
-            'pcd' => ['required', 'string', 'max:255'],
+            'pcd' => ['required', 'array', 'max:255'],
             'pcd_acquired' => ['required', 'boolean'],
             'needed_assistance' => ['required', 'boolean'],
         ];

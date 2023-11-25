@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('color');
             $table->boolean('job');
             $table->string('pcd_type');
-            $table->string('pcd');
+            $table->json('pcd');
             $table->boolean('pcd_acquired');
             $table->boolean('needed_assistance');
             $table->string('custom_token')->nullable();
