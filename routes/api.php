@@ -19,7 +19,7 @@ Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresse
 
 Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-Route::get('/get-user/{table}/{id}', [UserController::class, 'getUserById']);
+Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 

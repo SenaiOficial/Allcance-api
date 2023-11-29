@@ -52,11 +52,12 @@ class RegisterController extends Controller
 
             $acessToken = Str::random(60);
             $userId = $user->id;
+            $userType = $user->getTable();
 
             $user->update(['custom_token' => $acessToken]);
 
             $cookieController = app(CookieController::class);
-            $cookieController->setAcessToken($acessToken, $userId);
+            $cookieController->setAcessToken($acessToken, $userId, $userType);
 
             Log::info('Usuário criado com sucesso');
             return response()->json(['message' => 'Usuário criado com sucesso']);
