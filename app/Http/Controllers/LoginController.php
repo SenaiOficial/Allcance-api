@@ -33,8 +33,10 @@ class LoginController extends Controller
 
         if ($user) {
             $customToken = Str::random(60);
+            $userId = $user->id;
+
             $cookieController = app(CookieController::class);
-            return $cookieController->setAcessToken($customToken);
+            return $cookieController->setAcessToken($customToken, $userId);
         } else {
             return response()->json(['error' => 'Erro ao obter informações do usuário.'], 500);
         }

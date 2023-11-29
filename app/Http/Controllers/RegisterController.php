@@ -51,14 +51,15 @@ class RegisterController extends Controller
             }
 
             $acessToken = Str::random(60);
+            $userId = $user->id;
 
             $user->update(['custom_token' => $acessToken]);
 
             $cookieController = app(CookieController::class);
-            $cookieController->setAcessToken($acessToken);
+            $cookieController->setAcessToken($acessToken, $userId);
 
             Log::info('Usuário criado com sucesso');
-            return response()->json(['message' => 'Usuário criado com sucesso', 'user_id' => $user->id]);
+            return response()->json(['message' => 'Usuário criado com sucesso']);
         } catch (\Exception $e) {
             Log::error('Erro ao criar usuário :' . $e->getMessage());
             return response()->json(['errors' => $e->getMessage()]);
