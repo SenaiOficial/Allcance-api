@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -17,6 +18,8 @@ Route::get('/', function () {
 Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
 
 Route::get('/generate-token', [TokenController::class, 'generateToken']);
+
+Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 

@@ -4,27 +4,42 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserStandar;
+use App\Models\UserAdmin;
+use App\Models\UserPcd;
 use App\Http\Requests\RegisterRequest;
 
 class UserController extends Controller
 {
-    protected function getErrors($validator)
+    public function getUserById($tableName, $id)
     {
-        $errors = [];
+        $model = $this->getModelByTableName($tableName);
 
-        if ($validator->errors()->has('date_of_birth')) {
-            $errors['date_of_birth'] = $validator->errors()->first('date_of_birth');
+        if (!$model) {
+            return response()->json(['error' => 'Tabela não encontrada'], 404);
         }
 
-        if ($validator->errors()->has('email')) {
-            $errors['email'] = $validator->errors()->first('email');
-        }
+        try {
+            $user = $model::find($id);
 
-        if ($validator->errors()->has('cpf')) {
-            $errors['cpf'] = $validator->errors()->first('cpf');
+            if (!$user) {
+                return response()->json(['error' => 'Usuário não encontrado'], 404);
+            }
+            return response()->json(['user' => $user->getAttributes()]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Erro ao obter usuário']);
         }
+    }
 
-        return $errors;
+    private function getModelByTableName($tableName)
+    {
+        $models = [
+            'standar_user' => UserStandar::class,
+            'admin_user' => UserAdmin::class,
+            'pcd_users' => UserPcd::class,
+        ];
+
+        return $models[$tableName] ?? null;
     }
 
     public function update(RegisterRequest $request, User $user)
