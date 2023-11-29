@@ -25,10 +25,40 @@ class UserController extends Controller
             if (!$user) {
                 return response()->json(['error' => 'Usuário não encontrado'], 404);
             }
-            return response()->json(['user' => $user->getAttributes()]);
+
+            $userResponse = [];
+            
+            if ($tableName == 'pcd_users') {
+                $userResponse = $this->getPcdUser($user);
+            }
+
+            return response()->json([ $tableName => $userResponse]);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao obter usuário']);
+            return response()->json(['error' => $e->getMessage()]);
         }
+    }
+
+    public function getPcdUser($user)
+    {
+        return [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'cellphone' => $user->phone_number,
+            'cpf' => $user->cpf,
+            'date_of_birth' => $user->date_of_birth,
+            'status' => $user->marital_status,
+            'gender' => $user->gender,
+            'email' => $user->email,
+            'cep' => $user->cep,
+            'country' => $user->country,
+            'state' => $user->state,
+            'city' => $user->city,
+            'street' => $user->street,
+            'street_number' => $user->street_number,
+            'street_complement' => $user->street_complement,
+            'pcd_type' => $user->pcd_type,
+            'pcd' => $user->pcd
+        ];
     }
 
     private function getModelByTableName($tableName)
