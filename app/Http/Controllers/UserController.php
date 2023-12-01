@@ -32,13 +32,21 @@ class UserController extends Controller
                 $userResponse = $this->getPcdUser($user);
             }
 
-            return response()->json([ $tableName => $userResponse]);
+            if ($tableName == 'standar_user') {
+                $userResponse = $this->getStandarUser($user);
+            }
+
+            if ($tableName == 'admin_user') {
+                $userResponse = $this->getAdminUser($user);
+            }
+
+            return response()->json([ $tableName => $userResponse], 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
     }
 
-    public function getPcdUser($user)
+    private function getPcdUser($user)
     {
         return [
             'first_name' => $user->first_name,
@@ -61,12 +69,38 @@ class UserController extends Controller
         ];
     }
 
+    private function getStandarUser($user)
+    {
+        return [
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'cellphone' => $user->phone_number,
+            'cpf' => $user->cpf,
+            'date_of_birth' => $user->date_of_birth,
+            'status' => $user->marital_status,
+            'gender' => $user->gender,
+            'email' => $user->email,
+            'state' => $user->state,
+            'city' => $user->city
+        ];
+    }
+
+    private function getAdminUser($user)
+    {
+        return [
+            'institution_name' => $user->institution_name,
+            'telephone' => $user->telephone,
+            'cnpj' => $user->cnpj,
+            'email' => $user->email
+        ];
+    }
+
     private function getModelByTableName($tableName)
     {
         $models = [
+            'pcd_users' => UserPcd::class,
             'standar_user' => UserStandar::class,
             'admin_user' => UserAdmin::class,
-            'pcd_users' => UserPcd::class,
         ];
 
         return $models[$tableName] ?? null;
