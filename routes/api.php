@@ -15,11 +15,13 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
+Route::middleware(['ensureUserIsLogged'])->group(function () {
+    Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
 
-Route::get('/generate-token', [TokenController::class, 'generateToken']);
+    Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
+    Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
+});
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 
