@@ -60,10 +60,13 @@ class RegisterController extends Controller
             $cookieController->setAcessToken($acessToken, $userId, $userType);
 
             Log::info('Usuário criado com sucesso');
-            return response()->json(['message' => 'Usuário criado com sucesso']);
+            return response()->json(['message' => 'Usuário criado com sucesso'], 200);
         } catch (\Exception $e) {
+            if ($e->getCode() == '23000') {
+                return response()->json(['error' => 'Email ou CPF já cadastrado'], 400);
+            }
             Log::error('Erro ao criar usuário :' . $e->getMessage());
-            return response()->json(['errors' => $e->getMessage()]);
+            return response()->json(['errors' => $e->getMessage()], 400);
         }
     }
 
