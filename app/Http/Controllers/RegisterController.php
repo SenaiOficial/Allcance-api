@@ -57,10 +57,10 @@ class RegisterController extends Controller
             $user->update(['custom_token' => $acessToken]);
 
             $cookieController = app(CookieController::class);
-            $cookieController->setAcessToken($acessToken, $userId, $userType);
+           
 
             Log::info('Usuário criado com sucesso');
-            return response()->json(['message' => 'Usuário criado com sucesso'], 200);
+            return response()->json(['message' => 'Usuário criado com sucesso',  $cookieController->setAcessToken($acessToken, $userId, $userType)], 200);
         } catch (\Exception $e) {
             if ($e->getCode() == '23000') {
                 return response()->json(['error' => 'Email ou CPF já cadastrado'], 400);
