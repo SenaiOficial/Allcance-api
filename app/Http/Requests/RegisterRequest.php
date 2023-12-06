@@ -34,7 +34,7 @@ class RegisterRequest extends FormRequest
             'city' => ['required', 'string', 'max:255'],
             'street' => ['required', 'string', 'max:255'],
             'street_number' => ['required', 'string', 'max:255'],
-            'street_complement' => ['string', 'max:255'],
+            'street_complement' => ['nullable', 'string', 'max:255'],
             'color' => ['required', 'string', 'max:255'],
             'job' => ['required', 'boolean'],
             'pcd_type' => ['required', 'string', 'max:255'],
