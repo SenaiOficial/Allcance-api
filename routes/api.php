@@ -10,6 +10,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PcdController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\SuggestionsController;
 
 Route::get('/', function () {
     return "It's alive!";
@@ -21,6 +22,10 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
     Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
     Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
+
+    Route::get('/suggestions/{userId}', [SuggestionsController::class, 'show']);
+
+    Route::post('/suggestions', [SuggestionsController::class, 'store']);
 });
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
