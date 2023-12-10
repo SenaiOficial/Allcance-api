@@ -29,4 +29,27 @@ class SuggestionsController extends Controller
             return response()->json($e->getMessage(), 400);
         }
     }
+    public function show($userId)
+    {
+        try {
+            $suggestions = Suggestions::with('user')
+            ->where('user_id', $userId)
+            ->get();
+
+            foreach($suggestions as $suggestion) {
+                $formattedSuggestions[] = [
+                    'user_name' => $suggestion->user->first_name,
+                    'content' => $suggestion->content
+                ];
+            }
+
+            if ($suggestions->isEmpty()) {
+                return response()->json(['message' => 'Nenhuma sugestão encontrada']);
+            }
+
+            return response()->json(['suggestions' => $formattedSuggestions]);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 400);
+        }
+    }
 }

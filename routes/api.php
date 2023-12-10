@@ -23,7 +23,7 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
 
     Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
 
-    Route::get('/suggestions', [SuggestionsController::class, 'index']);
+    Route::get('/suggestions/{userId}', [SuggestionsController::class, 'show']);
 
     Route::post('/suggestions', [SuggestionsController::class, 'store']);
 });
