@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Suggestions;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\SuggestionsRequest;
 
 class SuggestionsController extends Controller
 {
@@ -12,26 +12,21 @@ class SuggestionsController extends Controller
     public function index()
     {
         $suggestions = Suggestions::all();
-        return view("suggestions.index", compact("suggestions"));
+        return response()->json(['suggestions' => $suggestions]);
     }
 
-    public function store(Request $request)
+    public function store(SuggestionsRequest $request)
     {
-        $user = Auth::guard('web')->user();
-
-        $request->validate([
-            'content' => 'required, string, max:1000'
-        ]);
-
-        dd($user);
-
-        $suggestion = new Suggestions([
-            'user_id' => $user,
-            'content' => 'teste',
-        ]);
-
-        $suggestion->save();
-
-        return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
+        try {
+            $validatedData = $request->validated();
+            
+            $suggestion = new Suggestions($validatedData);
+            
+            $suggestion->save();
+            
+            return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(), 400);
+        }
     }
 }
