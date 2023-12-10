@@ -8,13 +8,6 @@ use App\Http\Requests\SuggestionsRequest;
 
 class SuggestionsController extends Controller
 {
-
-    public function index()
-    {
-        $suggestions = Suggestions::all();
-        return response()->json(['suggestions' => $suggestions]);
-    }
-
     public function store(SuggestionsRequest $request)
     {
         try {
