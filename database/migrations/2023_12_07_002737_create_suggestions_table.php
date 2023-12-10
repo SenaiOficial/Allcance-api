@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('content');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('pcd_users')->onDelete('cascade');
         });
     }
 
