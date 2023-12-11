@@ -10,7 +10,7 @@ class Suggestions extends Model
     use HasFactory;
 
     protected $table = 'suggestions';
-    protected $fillable = ['user_id', 'content'];
+    protected $fillable = ['user_id', 'content', 'approved'];
 
     public function user()
     {
