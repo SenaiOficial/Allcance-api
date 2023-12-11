@@ -3,8 +3,6 @@
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
-use App\Models\Address;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\PcdController;
@@ -23,7 +21,9 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
 
     Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
 
-    Route::get('/suggestions/{userId}', [SuggestionsController::class, 'show']);
+    Route::get('/suggestions', [SuggestionsController::class, 'showSuggestionsReq']);
+    
+    Route::get('/suggestions/approved', [SuggestionsController::class, 'showApproved']);
 
     Route::post('/suggestions', [SuggestionsController::class, 'store']);
 });

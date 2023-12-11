@@ -22,11 +22,12 @@ class SuggestionsController extends Controller
             return response()->json($e->getMessage(), 400);
         }
     }
-    public function show($userId)
+
+    public function showSuggestions($approved)
     {
         try {
             $suggestions = Suggestions::with('user')
-            ->where('user_id', $userId)
+            ->where('approved', $approved)
             ->get();
 
             foreach($suggestions as $suggestion) {
@@ -44,5 +45,15 @@ class SuggestionsController extends Controller
         } catch (\Exception $e) {
             return response()->json($e->getMessage(), 400);
         }
+    }
+
+    public function showApproved()
+    {
+        return $this->showSuggestions(true);
+    }
+
+    public function showSuggestionsReq()
+    {
+        return $this->showSuggestions(false);
     }
 }
