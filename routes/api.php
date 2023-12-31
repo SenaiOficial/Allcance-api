@@ -26,6 +26,8 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
     Route::get('/suggestions/approved', [SuggestionsController::class, 'showApproved']);
 
     Route::post('/suggestions', [SuggestionsController::class, 'store']);
+
+    Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
 });
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
