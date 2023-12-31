@@ -23,6 +23,20 @@ class SuggestionsController extends Controller
         }
     }
 
+    public function update(Request $request, $id)
+    {
+        $suggestion = Suggestions::find($id);
+
+        if (!$suggestion) {
+            return response()->json(['message' => 'Sugestão não encontrada!']);
+        }
+
+        $suggestion->update(['approved' => true]);
+        $suggestion->save();
+
+        return response()->json(['message' => 'Sugestão atualizada com sucesso!']);
+    }
+
     public function showSuggestions($approved)
     {
         try {
@@ -32,6 +46,7 @@ class SuggestionsController extends Controller
 
             foreach($suggestions as $suggestion) {
                 $formattedSuggestions[] = [
+                    'id' => $suggestion->id,
                     'user_name' => $suggestion->user->first_name,
                     'content' => $suggestion->content
                 ];
