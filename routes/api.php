@@ -20,14 +20,18 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
     Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
     Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
+});
 
-    Route::get('/suggestions', [SuggestionsController::class, 'showSuggestionsReq']);
-    
-    Route::get('/suggestions/approved', [SuggestionsController::class, 'showApproved']);
+Route::prefix('suggestions')->middleware(['ensureUserIsLogged'])->group(function () {
+    Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
 
-    Route::post('/suggestions', [SuggestionsController::class, 'store']);
+    Route::get('/approved', [SuggestionsController::class, 'showApproved']);
+
+    Route::post('/', [SuggestionsController::class, 'store']);
 
     Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
+
+    Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
 });
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
