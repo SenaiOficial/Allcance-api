@@ -38,7 +38,7 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'pcd_users',
         ],
 
         'standar' => [
@@ -70,7 +70,7 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'pcd_users' => [
             'driver' => 'eloquent',
             'model' => App\Models\UserPcd::class,
         ],
@@ -107,8 +107,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'pcd_users' => [
+            'provider' => 'pcd_users',
             'table' => 'password_resets',
             'expire' => 60,
             'throttle' => 60,
@@ -124,7 +124,7 @@ return [
 
     'admin_user' => [
         'provider' => 'admin_user',
-        'table' => 'password_resets_standar',
+        'table' => 'password_resets_admin',
         'expire' => 60,
         'throttle' => 60,
     ],

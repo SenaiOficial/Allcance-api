@@ -9,6 +9,8 @@ class CookieController extends Controller
 {
     public function setAcessToken($acessToken, $userId, $userType)
     {
+        $this->clearAccessToken();
+
         $cookie = Cookie::make('custom_token', $acessToken, 480, '/');
         
         return response()->json([
@@ -18,7 +20,7 @@ class CookieController extends Controller
         'userType' => $userType])->withCookie($cookie);
     }
 
-    public function clearAcessToken()
+    public function clearAccessToken()
     {
         $cookie = Cookie::forget('custom_token');
 

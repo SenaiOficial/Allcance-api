@@ -18,33 +18,26 @@ class LoginController extends Controller
     public function login(LoginRequest $request)
     {
         $credentials = $request->getCredentials();
+        $guards = ['web', 'standar', 'admin'];
 
-        if (Auth::guard('web')->attempt($credentials)) {
-            $user = Auth::guard('web')->user();
-        } elseif (Auth::guard('standar')->attempt($credentials)) {
-            $user = Auth::guard('standar')->user();
-        } elseif (Auth::guard('admin')->attempt($credentials)) {
-            $user = Auth::guard('admin')->user();
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->attempt($credentials)) {
+                $user = Auth::guard($guard)->user();
+                break;
+            }
         }
 
-        else {
+        if (!isset($user)) {
             return response()->json(['error' => 'Email ou senha inválidos!'], 401);
         }
 
-        if ($user) {
-            $customToken = Str::random(60);
-            $userId = $user->id;
-            $userType = $user->getTable();
+        $acessToken = Str::random(60);
+        $userId = $user->id;
+        $userType = $user->getTable();
 
-            $cookieController = app(CookieController::class);
-            return $cookieController->setAcessToken($customToken, $userId, $userType);
-        } else {
-            return response()->json(['error' => 'Erro ao obter informações do usuário.'], 500);
-        }
-    }
+        $user->update(['custom_token' => $acessToken]);
 
-    protected function authenticated(Request $request, $user)
-    {
-        return redirect()->intended();
+        $cookieController = app(CookieController::class);
+        return $cookieController->setAcessToken($acessToken, $userId, $userType);
     }
 }
