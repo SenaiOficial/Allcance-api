@@ -11,17 +11,17 @@ class TokenController extends Controller
 {
     public function generateToken(Request $request)
     {
-        $randomToken = Str::random(50);
+        $token = Str::random(5);
 
         $existingToken = InstitutionalToken::first();
 
         if ($existingToken) {
-            $existingToken->update(['institutional_token' => $randomToken]);
+            $existingToken->update(['institutional_token' => $token]);
         } else {
-            InstitutionalToken::create(['institutional_token' => $randomToken]);
+            InstitutionalToken::create(['institutional_token' => $token]);
         }
 
-        return response()->json(['token:' => $randomToken], 200);
+        return response()->json(['token:' => $token], 200);
     }
 
     public function validateToken(Request $request)

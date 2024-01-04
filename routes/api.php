@@ -19,7 +19,7 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
 
     Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-    Route::get('/get-user/{userType}/{id}', [UserController::class, 'getUserById']);
+    Route::get('/get-user', [UserController::class, 'getUserById']);
 });
 
 Route::prefix('suggestions')->middleware(['ensureUserIsLogged'])->group(function () {
