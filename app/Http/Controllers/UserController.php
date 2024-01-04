@@ -3,46 +3,53 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\UserStandar;
-use App\Models\UserAdmin;
-use App\Models\UserPcd;
-use App\Http\Requests\RegisterRequest;
+use Illuminate\Http\Request;
+use App\Services\UserService;
 
 class UserController extends Controller
 {
-    public function getUserById($tableName, $id)
-    {
-        $model = $this->getModelByTableName($tableName);
+    protected $userService;
 
-        if (!$model) {
-            return response()->json(['error' => 'Tabela não encontrada'], 404);
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    public function getUser(Request $request)
+    {
+        $cookieToken = $request->cookie('custom_token');
+
+        $user = $this->userService->findUserByToken($cookieToken);
+
+        return $user;
+    }
+
+    public function getUserById(Request $request)
+    {
+        $user = $this->getUser($request);
+        
+        if (!$user) {
+            return response()->json(['error' => 'Usuário não encontrado'], 404);
         }
 
-        try {
-            $user = $model::find($id);
+        $userType = $user->getTable();
+        $userData = $this->getUserDataByType($user, $userType);
+        
+        return response()->json(['user' => $userData], 200);
 
-            if (!$user) {
-                return response()->json(['error' => 'Usuário não encontrado'], 404);
-            }
+    }
 
-            $userResponse = [];
-            
-            if ($tableName == 'pcd_users') {
-                $userResponse = $this->getPcdUser($user);
-            }
-
-            if ($tableName == 'standar_user') {
-                $userResponse = $this->getStandarUser($user);
-            }
-
-            if ($tableName == 'admin_user') {
-                $userResponse = $this->getAdminUser($user);
-            }
-
-            return response()->json([ $tableName => $userResponse], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+    private function getUserDataByType($user, $userType)
+    {
+        switch ($userType) {
+            case 'pcd_users':
+                return $this->getPcdUser($user);
+            case 'standar_user':
+                return $this->getStandarUser($user);
+            case 'admin_user':
+                return $this->getAdminUser($user);
+            default:
+                return null;
         }
     }
 
@@ -93,32 +100,5 @@ class UserController extends Controller
             'cnpj' => $user->cnpj,
             'email' => $user->email
         ];
-    }
-
-    private function getModelByTableName($tableName)
-    {
-        $models = [
-            'pcd_users' => UserPcd::class,
-            'standar_user' => UserStandar::class,
-            'admin_user' => UserAdmin::class,
-        ];
-
-        return $models[$tableName] ?? null;
-    }
-
-    public function update(RegisterRequest $request, User $user)
-    {
-        $validatedData = $request->validated();
-
-        $user->update($validatedData);
-
-        return response()->json(['message' => 'Usuário atualizado com sucesso']);
-    }
-
-    public function destroy(User $user)
-    {
-        $user->delete();
-
-        return response()->json(['message' => 'Usuário excluído com sucesso']);
     }
 }
