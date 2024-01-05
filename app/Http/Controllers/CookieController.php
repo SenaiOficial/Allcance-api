@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\Cookie;
 
 class CookieController extends Controller
 {
-    public function setAcessToken($acessToken, $userId, $userType)
+    public function setAccessToken($accessToken, $userId, $userType)
     {
         $this->clearAccessToken();
 
-        $cookie = Cookie::make('custom_token', $acessToken, 480, '/');
+        $cookie = Cookie::make('custom_token', $accessToken, 480, '/');
         
         return response()->json([
         'message' => 'Sessão iniciada',
-        'acess_token' => $acessToken,
+        'access_token' => $accessToken,
         'user_id' => $userId,
         'userType' => $userType])->withCookie($cookie);
     }

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\InstitutionalToken;
-use App\Models\UserAdmin;
 
 class TokenController extends Controller
 {

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -31,13 +30,10 @@ class LoginController extends Controller
             return response()->json(['error' => 'Email ou senha inválidos!'], 401);
         }
 
-        $acessToken = Str::random(60);
-        $userId = $user->id;
-        $userType = $user->getTable();
-
-        $user->update(['custom_token' => $acessToken]);
+        $accessToken = Str::random(60);
+        $user->update(['custom_token' => $accessToken]);
 
         $cookieController = app(CookieController::class);
-        return $cookieController->setAcessToken($acessToken, $userId, $userType);
+        return $cookieController->setAccessToken($accessToken);
     }
 }

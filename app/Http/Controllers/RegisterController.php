@@ -20,18 +20,14 @@ class RegisterController extends Controller
 {
     public function index()
     {
-        try{
-            $users = User::all();
-            return response()->json($users);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao criar usuário'], 500);
-        }
+        $users = User::all();
+        return response()->json($users);
     }
+
     public function store(Request $request, $model)
     {
         try {
             $validatedData = $request->validated();
-
             $validatedData['password'] = Hash::make($validatedData['password']);
 
             if($request->has('pass_code')) {
@@ -50,22 +46,16 @@ class RegisterController extends Controller
                 return response()->json(['error' => 'Erro ao criar usuário']);
             }
 
-            $acessToken = Str::random(60);
-            $userId = $user->id;
-            $userType = $user->getTable();
-
-            $user->update(['custom_token' => $acessToken]);
+            $accessToken = Str::random(60);
+            $user->update(['custom_token' => $accessToken]);
 
             $cookieController = app(CookieController::class);
            
-
-            Log::info('Usuário criado com sucesso');
-            return response()->json(['message' => 'Usuário criado com sucesso',  $cookieController->setAcessToken($acessToken, $userId, $userType)], 200);
+            return response()->json(['message' => 'Usuário criado com sucesso',  $cookieController->setAccessToken($accessToken)], 200);
         } catch (\Exception $e) {
             if ($e->getCode() == '23000') {
                 return response()->json(['error' => 'Email ou CPF já cadastrado'], 400);
             }
-            Log::error('Erro ao criar usuário :' . $e->getMessage());
             return response()->json(['errors' => $e->getMessage()], 400);
         }
     }
