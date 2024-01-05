@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cookie;
 
 class CookieController extends Controller
 {
-    public function setAccessToken($accessToken, $userId, $userType)
+    public function setAccessToken($accessToken)
     {
         $this->clearAccessToken();
 
@@ -15,9 +15,7 @@ class CookieController extends Controller
         
         return response()->json([
         'message' => 'Sessão iniciada',
-        'access_token' => $accessToken,
-        'user_id' => $userId,
-        'userType' => $userType])->withCookie($cookie);
+        'access_token' => $accessToken])->withCookie($cookie);
     }
 
     public function clearAccessToken()
