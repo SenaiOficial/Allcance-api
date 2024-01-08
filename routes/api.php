@@ -14,7 +14,7 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::middleware(['ensureUserIsLogged'])->group(function () {
+Route::middleware(['isLogged'])->group(function () {
     Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
 
     Route::get('/generate-token', [TokenController::class, 'generateToken']);
@@ -22,7 +22,7 @@ Route::middleware(['ensureUserIsLogged'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
 });
 
-Route::prefix('suggestions')->middleware(['ensureUserIsLogged'])->group(function () {
+Route::prefix('suggestions')->middleware(['isLogged'])->group(function () {
     Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
 
     Route::get('/approved', [SuggestionsController::class, 'showApproved']);
