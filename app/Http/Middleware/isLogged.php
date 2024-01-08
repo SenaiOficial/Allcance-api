@@ -22,7 +22,6 @@ class isLogged
 
         $userToken = $user->custom_token;
 
-        // dd($userToken === $accessToken);
         if (!$accessToken || $userToken !== $accessToken) {
             return response()->json(['error' => 'Usuário não authenticado!'], 401);
         }
