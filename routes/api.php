@@ -15,23 +15,22 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::middleware(['isLogged'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
-
-    Route::get('/generate-token', [TokenController::class, 'generateToken']);
-
     Route::get('/get-user', [UserController::class, 'getUserById']);
 
     Route::prefix('suggestions')->group(function () {
         Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
-        
-        Route::get('/approved', [SuggestionsController::class, 'showApproved']);
-        
-        Route::post('/', [SuggestionsController::class, 'store']);
-        
-        Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
-        
-        Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
+    });
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/generate-token', [TokenController::class, 'generateToken']);
+
+        Route::prefix('suggestions')->middleware(['admin'])->group(function () {
+            Route::get('/approved', [SuggestionsController::class, 'showApproved']);
+            Route::post('/', [SuggestionsController::class, 'store']);
+            Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
+            Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
+        });
     });
 });
 
