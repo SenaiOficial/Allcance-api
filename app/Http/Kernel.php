@@ -54,7 +54,7 @@ class Kernel extends HttpKernel
      * @var array<string, class-string|string>
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth' => \App\Http\Middleware\isLogged::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
@@ -63,7 +63,6 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'custom_token' => \App\Http\Middleware\CustomTokenMiddleware::class,
-        'isLogged' => \App\Http\Middleware\isLogged::class,
+        'admin' => \App\Http\Middleware\AdminMiddleware::class,
     ];
 }
