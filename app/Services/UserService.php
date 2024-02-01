@@ -6,26 +6,29 @@ use App\Models\UserPcd;
 use App\Models\UserAdmin;
 use App\Models\UserStandar;
 
-Class UserService
+class UserService
 {
+  protected $userPcd;
+  protected $userStandar;
+  protected $userAdmin;
+
+  public function __construct(UserPcd $userPcd, UserStandar $userStandar, UserAdmin $userAdmin)
+  {
+    $this->userPcd = $userPcd;
+    $this->userStandar = $userStandar;
+    $this->userAdmin = $userAdmin;
+  }
+
   public function findUserByToken($token)
   {
-    $userPcd = UserPcd::where('custom_token', $token)->first();
-
-    if (!$userPcd) {
-      $userAdmin = UserAdmin::where('custom_token', $token)->first();
-
-      if ($userAdmin) {
-        return $userAdmin;
-      }
+    if ($token === null) {
+      abort(404, 'Nenhum usuário encontrado');
     }
 
-    $standarUser = UserStandar::where('custom_token', $token)->first();
+    $userPcd = $this->userPcd->where('custom_token', $token)->first();
+    $userAdmin = $this->userAdmin->where('custom_token', $token)->first();
+    $userStandar = $this->userStandar->where('custom_token', $token)->first();
 
-    if ($standarUser) {
-      return $standarUser;
-    }
-
-    return $userPcd;
+    return $userPcd ?? $userStandar ?? $userAdmin;
   }
 }
