@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 
 class CookieController extends Controller
@@ -22,6 +21,6 @@ class CookieController extends Controller
     {
         $cookie = Cookie::forget('custom_token');
 
-        return response()->json(['message' => 'Cookie removido!'])->withCookie($cookie);
+        return response()->json(['message' => 'Sessão encerarad!'])->withCookie($cookie);
     }
 }
