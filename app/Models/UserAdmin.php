@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable;
+use App\Models\ResetPassword;
 
 class UserAdmin extends Model implements Authenticatable
 {
@@ -51,5 +52,10 @@ class UserAdmin extends Model implements Authenticatable
     public function getRememberTokenName()
     {
         return 'remember_token';
+    }
+
+    public function resetPasswords()
+    {
+        return $this->hasMany(ResetPassword::class, 'email', 'email');
     }
 }

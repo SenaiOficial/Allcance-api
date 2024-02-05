@@ -9,6 +9,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\SuggestionsController;
 use App\Http\Controllers\CookieController;
+use App\Http\Controllers\ForgetPassword;
 use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
@@ -34,6 +35,8 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 });
+
+Route::post('/reset-password', [ForgetPassword::class, 'getResetToken']);
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 
