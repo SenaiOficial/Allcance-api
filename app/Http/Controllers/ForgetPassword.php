@@ -5,18 +5,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\ResetPassword;
+use Illuminate\Validation\Rule;
 
 class ForgetPassword extends Controller
 {
   public function getResetToken(Request $request)
   {
     $request->validate([
-      'email' => 'required|email|exists:standar_user,email|exists:pcd_users,email|exists:admin_user,email',
+      'email' => [
+        'required',
+        'email',
+        function ($attribute, $value, $fail) {
+          $existsInAnyTable = collect(['standar_user', 'admin_user', 'pcd_users'])
+            ->filter(function ($table) use ($value) {
+              return \DB::table($table)->where('email', $value)->exists();
+            })
+            ->isNotEmpty();
+
+          if (!$existsInAnyTable) {
+            $fail('Email não encontrado.');
+          }
+        },
+      ],
     ]);
 
     $token = Str::random(60);
 
-    ResetPassword::create([
+    $resetPassword = ResetPassword::create([
       'email' => $request->email,
       'token' => $token,
     ]);
@@ -24,25 +39,25 @@ class ForgetPassword extends Controller
     return response()->json(['token' => $token]);
   }
 
-  public function validateToken($request)
+  public function validateToken(Request $request)
   {
-    $validateData = $request->validate();
+    $validateData = $request->validate([
+      'token' => 'required|exists:reset_passwords'
+    ]);
 
-    if ($request->has('token')) {
-      $tokenReq = $validateData['token'];
-      $userToken = ResetPassword::first()->reset_passwords;
+    $userToken = ResetPassword::where('token', $validateData['token'])->first();
 
-      if ($tokenReq !== $userToken) {
-        return response()->json(['error' => 'Token inválido'], 401);
-      }
+    if (!$userToken) {
+      return response()->json(['error' => 'Token inválido'], 401);
     }
+
+    return response()->json(['success' => 'Token válido!'], 200);
   }
 
   public function resetPassword(Request $request)
   {
     $request->validate([
-      'token' => "required",
-      'password' => "required" 
+      'password' => "required"
     ]);
 
     $this->validateToken($request);

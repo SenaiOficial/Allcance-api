@@ -36,7 +36,11 @@ Route::middleware(['auth'])->group(function () {
     });
 });
 
-Route::post('/reset-password', [ForgetPassword::class, 'getResetToken']);
+Route::prefix('password')->group(function () {
+    Route::post('/reset-password', [ForgetPassword::class, 'getResetToken']);
+    Route::post('/validate-token', [ForgetPassword::class, 'validateToken']);
+    Route::post('/update-password', [ForgetPassword::class, 'resetPassword']);
+});
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 
