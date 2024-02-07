@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('suggestions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->string('user');
             $table->string('content');
             $table->boolean('approved')->default(false);
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('pcd_users')->onDelete('cascade');
         });
     }
 
