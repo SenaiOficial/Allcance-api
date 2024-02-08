@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\ResetPassword;
-use Illuminate\Validation\Rule;
 
 class ForgetPassword extends Controller
 {
@@ -29,9 +28,9 @@ class ForgetPassword extends Controller
       ],
     ]);
 
-    $token = Str::random(60);
+    $token = Str::random(5);
 
-    $resetPassword = ResetPassword::create([
+    ResetPassword::create([
       'email' => $request->email,
       'token' => $token,
     ]);
@@ -41,17 +40,19 @@ class ForgetPassword extends Controller
 
   public function validateToken(Request $request)
   {
-    $validateData = $request->validate([
-      'token' => 'required|exists:reset_passwords'
-    ]);
+    try {
+      $validateData = $request->validate([
+        'token' => 'required|exists:reset_passwords'
+      ]);
 
-    $userToken = ResetPassword::where('token', $validateData['token'])->first();
+      $userToken = ResetPassword::where('token', $validateData['token'])->first();
 
-    if (!$userToken) {
+      if ($userToken) {  
+        return response()->json(['success' => 'Token válido!'], 200);
+      }
+    } catch (\Exception $e) {
       return response()->json(['error' => 'Token inválido'], 401);
     }
-
-    return response()->json(['success' => 'Token válido!'], 200);
   }
 
   public function resetPassword(Request $request)
