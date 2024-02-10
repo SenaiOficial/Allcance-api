@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 use App\Models\ResetPassword;
 
 class ForgetPassword extends Controller
@@ -47,8 +48,10 @@ class ForgetPassword extends Controller
 
       $userToken = ResetPassword::where('token', $validateData['token'])->first();
 
-      if ($userToken) {  
-        return response()->json(['success' => 'Token válido!'], 200);
+      if ($userToken) {
+        $resetUrl = URL::to('/reset-password?token=' . $validateData['token']);
+
+        return response()->json(['success' => 'Token válido!', 'reset_url' => $resetUrl], 200);
       }
     } catch (\Exception $e) {
       return response()->json(['error' => 'Token inválido'], 401);
@@ -58,9 +61,7 @@ class ForgetPassword extends Controller
   public function resetPassword(Request $request)
   {
     $request->validate([
-      'password' => "required"
+      'password' => 'required'
     ]);
-
-    $this->validateToken($request);
   }
 }
