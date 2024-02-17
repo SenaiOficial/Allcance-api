@@ -25,13 +25,18 @@ class SuggestionsController extends Controller
         return $user;
     }
 
-    public function store(SuggestionsRequest $request)
+    public function store(Request $request)
     {
+        $user = $this->getUser($request);
+        
         try {
-            $validatedData = $request->validated();
-            
+            $validatedData = $request->validate([
+                'content' => ['required', 'string', 'max:1000']
+            ]);
+
+            $validatedData['user'] = $user->first_name;
+
             $suggestion = new Suggestions($validatedData);
-            
             $suggestion->save();
             
             return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
@@ -71,17 +76,15 @@ class SuggestionsController extends Controller
         }
     }
 
-    public function showSuggestions($approved)
+    private function showSuggestions($approved)
     {
         try {
-            $suggestions = Suggestions::with('user')
-            ->where('approved', $approved)
-            ->get();
+            $suggestions = Suggestions::where('approved', $approved)->get();
 
             foreach($suggestions as $suggestion) {
                 $formattedSuggestions[] = [
                     'id' => $suggestion->id,
-                    'user_name' => $suggestion->user->first_name,
+                    'user' => $suggestion->user,
                     'content' => $suggestion->content
                 ];
             }

@@ -23,13 +23,14 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('suggestions')->group(function () {
         Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
+        Route::post('/', [SuggestionsController::class, 'store']);
     });
+
     Route::middleware(['admin'])->group(function () {
+        Route::get('/approved', [SuggestionsController::class, 'showApproved']);
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
         Route::prefix('suggestions')->middleware(['admin'])->group(function () {
-            Route::get('/approved', [SuggestionsController::class, 'showApproved']);
-            Route::post('/', [SuggestionsController::class, 'store']);
             Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
             Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
         });
