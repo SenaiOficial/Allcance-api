@@ -6,30 +6,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use App\Models\ResetPassword;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use App\Services\UserService;
 
 class ForgetPassword extends Controller
 {
+  protected $userService;
+
+  public function __construct(UserService $userService)
+  {
+    $this->userService = $userService;
+  }
+
   public function getResetToken(Request $request)
   {
-    $request->validate([
-      'email' => [
-        'required',
-        'email',
-        function ($attribute, $value, $fail) {
-          $existsInAnyTable = collect(['standar_user', 'admin_user', 'pcd_users'])
-            ->filter(function ($table) use ($value) {
-              return \DB::table($table)->where('email', $value)->exists();
-            })
-            ->isNotEmpty();
+    $this->validateEmail($request);
 
-          if (!$existsInAnyTable) {
-            $fail('Email não encontrado.');
-          }
-        },
-      ],
-    ]);
-
-    $token = Str::random(5);
+    $token = Str::random(10);
 
     ResetPassword::create([
       'email' => $request->email,
@@ -61,7 +55,69 @@ class ForgetPassword extends Controller
   public function resetPassword(Request $request)
   {
     $request->validate([
+      'token' => 'required|exists:reset_passwords',
       'password' => 'required'
+    ]);
+
+    $resetData = $request->only('token', 'password');
+    $resetToken = ResetPassword::where('token', $resetData['token'])->first();
+
+    if ($resetData) {
+      $table = $this->getTable($request);
+      $success = $this->updatePasswordInTable($table, $resetToken->email, $resetData['password']);
+
+      if ($success) {
+        $resetToken->delete();
+        return response()->json(['success' => 'Senha redefinida com sucesso!'], 200);
+      }
+    }
+
+    return response()->json(['error' => 'Erro ao redefinir senha. Token inválido ou usuário não encontrado.'], 401);
+  }
+
+  private function getUser(Request $request)
+  {
+    $cookieToken = $request->cookie('custom_token');
+
+    $user = $this->userService->findUserByToken($cookieToken);
+
+    return $user;
+  }
+
+  private function getTable(Request $request)
+  {
+    $user = $this->getUser($request);
+
+    return $user->getTable();
+  }
+
+  private function updatePasswordInTable($table, $email, $password)
+  {
+    $affectedRows = DB::table($table)
+      ->where('email', $email)
+      ->update(['password' => Hash::make($password)]);
+
+    return $affectedRows > 0;
+  }
+
+  private function validateEmail(Request $request)
+  {
+    $request->validate([
+      'email' => [
+        'required',
+        'email',
+        function ($attribute, $value, $fail) {
+          $existsInAnyTable = collect(['standar_user', 'admin_user', 'pcd_users'])
+            ->filter(function ($table) use ($value) {
+              return \DB::table($table)->where('email', $value)->exists();
+            })
+            ->isNotEmpty();
+
+          if (!$existsInAnyTable) {
+            $fail('Email não encontrado.');
+          }
+        },
+      ],
     ]);
   }
 }

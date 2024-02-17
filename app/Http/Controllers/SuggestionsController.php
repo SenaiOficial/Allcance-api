@@ -16,7 +16,7 @@ class SuggestionsController extends Controller
         $this->userService = $userService;
     }
 
-    public function getUser(Request $request)
+    private function getUser(Request $request)
     {
         $cookieToken = $request->cookie('custom_token');
 
