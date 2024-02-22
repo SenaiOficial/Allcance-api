@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('admin_user', function (Blueprint $table) {
             $table->id();
             $table->string('institution_name');
-            $table->string('telephone');
-            $table->string('cnpj')->unique();
+            $table->string('telephone', 10);
+            $table->string('cnpj', 14)->unique();
             $table->string('pass_code')->unique();
             $table->string('email')->unique();
             $table->string('password');

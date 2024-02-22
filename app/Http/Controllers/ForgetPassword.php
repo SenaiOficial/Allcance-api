@@ -56,7 +56,7 @@ class ForgetPassword extends Controller
   {
     $request->validate([
       'token' => 'required|exists:reset_passwords',
-      'password' => 'required'
+      'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/'
     ]);
 
     $resetData = $request->only('token', 'password');

@@ -21,6 +21,6 @@ class CookieController extends Controller
     {
         $cookie = Cookie::forget('custom_token');
 
-        return response()->json(['message' => 'Sessão encerarad!'])->withCookie($cookie);
+        return response()->json(['message' => 'Sessão encerrada!'])->withCookie($cookie);
     }
 }
