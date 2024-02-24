@@ -11,6 +11,7 @@ use App\Http\Controllers\SuggestionsController;
 use App\Http\Controllers\CookieController;
 use App\Http\Controllers\ForgetPassword;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashBoardController;
 
 Route::get('/', function () {
     return "It's alive!";
@@ -22,17 +23,21 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [CookieController::class, 'clearAccessToken']);
 
     Route::prefix('suggestions')->group(function () {
-        Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
+        Route::get('/approved', [SuggestionsController::class, 'showApproved']);
         Route::post('/', [SuggestionsController::class, 'store']);
     });
 
     Route::middleware(['admin'])->group(function () {
-        Route::get('/approved', [SuggestionsController::class, 'showApproved']);
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-        Route::prefix('suggestions')->middleware(['admin'])->group(function () {
+        Route::prefix('suggestions')->group(function () {
+            Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
             Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
             Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
+        });
+
+        Route::prefix('dashboards')->group(function () {
+            Route::get('/generate-dashboard-pcds', [DashBoardController::class, 'getPcdsReport']);
         });
     });
 });
