@@ -3,27 +3,31 @@
 namespace App\DashboardData;
 
 use App\Models\UserPcd;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
+
 
 class PcdsReport extends DashboardService
 {
   public function getReport()
   {
-    $totalByNeighborhood = UserPcd::select('neighborhood', \DB::raw('COUNT(*) as total'))
-      ->groupBy('neighborhood')
-      ->get()
-      ->keyBy('neighborhood')
-      ->toArray();
+    $report = Cache::remember('pcds_report', Carbon::now()->addDays(2), function () {
+      $totalByNeighborhood = UserPcd::select('neighborhood', \DB::raw('COUNT(*) as total'))
+        ->groupBy('neighborhood')
+        ->get()
+        ->keyBy('neighborhood')
+        ->toArray();
 
       $pcdsByNeighborhood = UserPcd::select('neighborhood', 'pcd')
-      ->get()
-      ->groupBy('neighborhood')
-      ->map(function ($group) {
-        return $group->groupBy('pcd')->map->count();
-      });
-      
-      $report = $this->calculate($totalByNeighborhood, $pcdsByNeighborhood);
-      
+        ->get()
+        ->groupBy('neighborhood')
+        ->map(function ($group) {
+          return $group->groupBy('pcd')->map->count();
+        });
+
+      return $this->calculate($totalByNeighborhood, $pcdsByNeighborhood);
+    });
+
     return $report;
   }
 
