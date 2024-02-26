@@ -18,12 +18,9 @@ class isLogged
     public function handle(Request $request, Closure $next)
     {
         $accessToken = $request->cookie('custom_token');
-        $user = $this->userService->findUserByToken($accessToken);
 
-        $userToken = $user->custom_token;
-
-        if (!$accessToken || $userToken !== $accessToken) {
-            return response()->json(['error' => 'Usuário não authenticado!'], 401);
+        if (!$accessToken || $accessToken !== $this->userService->findUserByToken($accessToken)->custom_token) {
+            return response()->json(['error' => 'Usuário não autenticado!'], 401);
         }
 
         return $next($request);
