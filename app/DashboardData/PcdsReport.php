@@ -6,7 +6,6 @@ use App\Models\UserPcd;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
-
 class PcdsReport extends DashboardService
 {
   public function getReport()
@@ -33,17 +32,25 @@ class PcdsReport extends DashboardService
 
   private function calculate($totalByNeighborhood, $pcdsByNeighborhood)
   {
-    $percentageByNeighborhood = [];
+    $totalByNeighborhood = [];
     foreach ($pcdsByNeighborhood as $neighborhood => $pcds) {
-      $total = $totalByNeighborhood[$neighborhood]['total'] ?? 1;
-      $percentages = [];
-      foreach ($pcds as $pcd => $count) {
-        $percentage = ($count / $total) * 100;
-        $percentages[$pcd] = intval($percentage);
-      }
-      $percentageByNeighborhood[$neighborhood] = $percentages;
+        $totalCount = array_sum($pcds->all());
+        $percentages = [];
+        $exactCounts = [];
+
+        foreach ($pcds as $pcd => $count) {
+            $percentage = ($count / $totalCount) * 100;
+            $percentages[$pcd] = intval($percentage, 2); 
+
+            $exactCounts[$pcd] = $count;
+        }
+
+        $totalByNeighborhood[$neighborhood] = [
+            'percentage' => $percentages,
+            'count' => $exactCounts,
+        ];
     }
 
-    return $percentageByNeighborhood;
+    return $totalByNeighborhood;
   }
 }
