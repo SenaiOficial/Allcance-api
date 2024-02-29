@@ -32,6 +32,7 @@ class RegisterRequest extends FormRequest
             'country' => ['required', 'string', 'max:30'],
             'state' => ['required', 'string', 'max:30'],
             'city' => ['required', 'string', 'max:50'],
+            'neighborhood' => ['required', 'string', 'max:50'],
             'street' => ['required', 'string', 'max:255'],
             'street_number' => ['required', 'string', 'max:4'],
             'street_complement' => ['nullable', 'string', 'max:255'],

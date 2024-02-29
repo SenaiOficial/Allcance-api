@@ -5,43 +5,53 @@ namespace App\Http\Controllers;
 use App\Models\Address;
 use Illuminate\Routing\Controller;
 use App\Http\Requests\AddressRequest;
-use App\Models\User;
+use App\Models\UserPcd;
+use Illuminate\Http\Request;
+use App\Services\UserService;
+use Log;
 
 class AddressController extends Controller
 {
-    public function index()
+    protected $userService;
+
+    public function __construct(UserService $userService)
     {
-        $addresses = Address::all();
-        return view('addresses.index', compact('addresses'));
+        $this->userService = $userService;
     }
 
-    public function store(AddressRequest $request, $userId)
+    public function getUser(Request $request)
     {
+        $token = $request->cookie('custom_token');
+
+        $user = $this->userService->findUserByToken($token);
+
+        return $user;
+    }
+
+    public function update(Request $request)
+    {
+        $user = $this->getUser($request);
+
+        $this->validateUser($user);
+
         try {
-            $validatedData = $request->validated();
-            
-            $address = new Address();
-            $address->fill($validatedData);
-            $address->user_id = $userId;
-            $address->save();
+            $userId = $user->id;
+            $requestData = $request->only(['neighborhood', 'street', 'street_number', 'street_complement']);
 
-            return response()->json(['message' => 'Cadastrado com sucesso!']);
+            $userPcd = UserPcd::find($userId);
+
+            $userPcd->update($requestData);
+
+            return response()->json(['message' => 'Campos atualizados com sucesso'], 200);
         } catch (\Exception $e) {
-            return response()->json(['errors' => $e->getMessage()], 500);
-        }    
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    //Apenas usuários PCDS precisam cadastrar endereço
-    public function showAddresses($userId)
+    private function validateUser($user)
     {
-        $user = User::find($userId);
-
-        if (!$user) {
-            return response()->json(['message' => 'Usuário não encontrado'], 404);
+        if ($user->getTable() !== 'pcd_users') {
+            abort(401, 'Unauthorized');
         }
-
-        $addresses = $user->addresses;
-
-        return response()->json(['addresses' => $addresses]);
     }
 }

@@ -27,6 +27,7 @@ class UserPcd extends Model implements Authenticatable
         'country',
         'state',
         'city',
+        'neighborhood',
         'street',
         'street_number',
         'street_complement',
