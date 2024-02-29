@@ -15,7 +15,7 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function getUser(Request $request)
+    private function getUser(Request $request)
     {
         $cookieToken = $request->cookie('custom_token');
 
@@ -98,6 +98,7 @@ class UserController extends Controller
             'institution_name' => $user->institution_name,
             'telephone' => $user->telephone,
             'cnpj' => $user->cnpj,
+            'is_institution' => $user->is_institution,
             'email' => $user->email
         ];
     }

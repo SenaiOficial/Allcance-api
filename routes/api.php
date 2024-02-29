@@ -22,6 +22,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
     Route::get('/logout', [CookieController::class, 'clearAccessToken']);
 
+    Route::prefix('address')->group(function() {
+        Route::put('/update-address', [AddressController::class, 'update']);
+    });
+
     Route::prefix('suggestions')->group(function () {
         Route::get('/approved', [SuggestionsController::class, 'showApproved']);
         Route::post('/', [SuggestionsController::class, 'store']);
