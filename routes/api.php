@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ResetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
@@ -9,7 +10,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\SuggestionsController;
 use App\Http\Controllers\CookieController;
-use App\Http\Controllers\ForgetPassword;
+use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashBoardController;
 
@@ -31,6 +32,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/', [SuggestionsController::class, 'store']);
     });
 
+    Route::prefix('password')->group(function () {
+        Route::put('/reset-password', [ResetPasswordController::class, 'resetPassword']);
+    });
+
     Route::middleware(['admin'])->group(function () {
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
@@ -47,9 +52,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::prefix('password')->group(function () {
-    Route::post('/reset-password', [ForgetPassword::class, 'getResetToken']);
-    Route::post('/validate-token', [ForgetPassword::class, 'validateToken']);
-    Route::post('/update-password', [ForgetPassword::class, 'resetPassword']);
+    Route::post('/reset-password', [ForgetPasswordController::class, 'getResetToken']);
+    Route::post('/validate-token', [ForgetPasswordController::class, 'validateToken']);
+    Route::post('/update-password', [ForgetPasswordController::class, 'resetForgotenPassword']);
 });
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
