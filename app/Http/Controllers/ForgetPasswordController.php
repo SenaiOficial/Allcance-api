@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use App\Services\UserService;
 
-class ForgetPassword extends Controller
+class ForgetPasswordController extends Controller
 {
   protected $userService;
 
@@ -52,7 +52,7 @@ class ForgetPassword extends Controller
     }
   }
 
-  public function resetPassword(Request $request)
+  public function resetForgotenPassword(Request $request)
   {
     $request->validate([
       'token' => 'required|exists:reset_passwords',
