@@ -16,8 +16,8 @@ class AdminMiddleware
 
   public function handle(Request $request, Closure $next)
   {
-    $acessToken = $request->cookie('custom_token');
-    $user = $this->userService->findUserByToken($acessToken);
+    $bearer = $request->bearerToken();
+    $user = $this->userService->findUserByToken($bearer);
 
     if (!$user->is_institution) {
       return response()->json(['error' => 'Unauthorized'], 403);
