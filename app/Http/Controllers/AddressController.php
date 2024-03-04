@@ -19,11 +19,11 @@ class AddressController extends Controller
         $this->userService = $userService;
     }
 
-    public function getUser(Request $request)
+    private function getUser(Request $request)
     {
-        $token = $request->cookie('custom_token');
+        $bearer = $request->bearerToken();
 
-        $user = $this->userService->findUserByToken($token);
+        $user = $this->userService->findUserByToken($bearer);
 
         return $user;
     }

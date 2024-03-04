@@ -17,9 +17,9 @@ class UserController extends Controller
 
     private function getUser(Request $request)
     {
-        $cookieToken = $request->cookie('custom_token');
+        $bearer = $request->bearerToken();
 
-        $user = $this->userService->findUserByToken($cookieToken);
+        $user = $this->userService->findUserByToken($bearer);
 
         return $user;
     }

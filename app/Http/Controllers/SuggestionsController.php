@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Suggestions;
-use App\Http\Requests\SuggestionsRequest;
 use App\Services\UserService;
 
 class SuggestionsController extends Controller
@@ -18,9 +17,9 @@ class SuggestionsController extends Controller
 
     private function getUser(Request $request)
     {
-        $cookieToken = $request->cookie('custom_token');
+        $bearer = $request->bearerToken();
 
-        $user = $this->userService->findUserByToken($cookieToken);
+        $user = $this->userService->findUserByToken($bearer);
 
         return $user;
     }
@@ -28,7 +27,7 @@ class SuggestionsController extends Controller
     public function store(Request $request)
     {
         $user = $this->getUser($request);
-        
+
         try {
             $validatedData = $request->validate([
                 'content' => ['required', 'string', 'max:1000']
