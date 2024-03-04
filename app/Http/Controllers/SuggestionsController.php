@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Suggestions;
-use App\Http\Requests\SuggestionsRequest;
 use App\Services\UserService;
-use Illuminate\Support\Facades\Log;
 
 class SuggestionsController extends Controller
 {
