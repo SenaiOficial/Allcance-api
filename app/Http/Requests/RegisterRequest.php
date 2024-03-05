@@ -28,6 +28,7 @@ class RegisterRequest extends FormRequest
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             ],
+            'confirm_password' => ['required', 'same:password'],
             'cep' => ['required', 'string', 'max:8'],
             'country' => ['required', 'string', 'max:30'],
             'state' => ['required', 'string', 'max:30'],

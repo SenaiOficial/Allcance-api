@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ResetPasswordController;
+use App\Services\RegisterService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
@@ -57,6 +58,8 @@ Route::prefix('password')->group(function () {
     Route::post('/update-password', [ForgetPasswordController::class, 'resetForgotenPassword']);
 });
 
+Route::post('/check-user-register', [RegisterController::class, 'checkExistUser']);
+
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
 
 Route::post('/user-standar', [RegisterController::class, 'userStandar']);
@@ -69,6 +72,3 @@ Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
 Route::post('/user-pcd/{userId}', [PcdController::class, 'store']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});

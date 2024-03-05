@@ -33,6 +33,7 @@ class RegisterAdminRequest extends FormRequest
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             ],
+            'confirm_password' => ['required', 'same:password'],
         ];
     }
 }
