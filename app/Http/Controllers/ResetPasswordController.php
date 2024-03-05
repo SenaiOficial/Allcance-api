@@ -20,7 +20,8 @@ class ResetPasswordController extends Controller
     try {
       $request->validate([
         'password' => 'required',
-        'new_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
+        'new_password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/|different:password',
+        'confirm_password' => 'required|same:new_password'
       ]);
 
       $user = $this->getUser($request);
