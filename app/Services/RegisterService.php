@@ -58,10 +58,12 @@ class RegisterService
   {
     $standarUserExists = UserStandar::where($attribute, $param)->exists();
     $pcdUserExists = UserPcd::where($attribute, $param)->exists();
+    $adminExists = UserAdmin::where('email', $param)->exists();
 
     return [
       $standarUserExists,
       $pcdUserExists,
+      $adminExists
     ];
   }
 
