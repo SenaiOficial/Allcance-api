@@ -34,4 +34,8 @@ class RegisterController extends Controller
     {
         return $this->registerService->registerUser($request, UserAdmin::class);
     }
+    public function checkExistUser(Request $request)
+    {
+        return $this->registerService->checkEmailorCPF($request);
+    }
 }
