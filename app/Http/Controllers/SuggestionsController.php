@@ -56,7 +56,7 @@ class SuggestionsController extends Controller
     
             return response()->json(['message' => 'Sugestão atualizada com sucesso!']);
         } else {
-            return response()->json(['message' => 'Usuário não autorizado!'], 401);
+            return response()->json(['error' => 'Usuário não autorizado!'], 401);
         }
     }
 
@@ -71,7 +71,7 @@ class SuggestionsController extends Controller
 
             return response()->json(['message' => 'Sugestão excluída com sucesso!']);
         } else {
-            return response()->json(['message' => 'Usuário não autorizado!'], 401);
+            return response()->json(['error' => 'Usuário não autorizado!'], 401);
         }
     }
 

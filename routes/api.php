@@ -1,12 +1,10 @@
 <?php
 
+use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\ResetPasswordController;
-use App\Services\RegisterService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\PcdController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\SuggestionsController;
@@ -20,7 +18,6 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/users/{userId}/addresses', [AddressController::class, 'showAddresses']);
     Route::get('/get-user', [UserController::class, 'getUserById']);
     Route::get('/logout', [CookieController::class, 'clearAccessToken']);
 
@@ -49,6 +46,11 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('dashboards')->group(function () {
             Route::get('/generate-dashboard-pcds', [DashBoardController::class, 'getPcdsReport']);
         });
+
+        Route::prefix('deficiency')->group(function () {
+            Route::post('/create-new-deficiency', [DeficiencyController::class, 'store']);
+            Route::delete('/delete-deficiency/{id}', [DeficiencyController::class, 'delete']);
+        });
     });
 });
 
@@ -56,6 +58,11 @@ Route::prefix('password')->group(function () {
     Route::post('/reset-password', [ForgetPasswordController::class, 'getResetToken']);
     Route::post('/validate-token', [ForgetPasswordController::class, 'validateToken']);
     Route::post('/update-password', [ForgetPasswordController::class, 'resetForgotenPassword']);
+});
+
+Route::prefix('deficiency')->group(function () {
+    Route::get('get', [DeficiencyController::class, 'get']);
+    Route::get('get-types', [DeficiencyController::class, 'getTypes']);
 });
 
 Route::post('/check-user-register', [RegisterController::class, 'checkExistUser']);
@@ -66,9 +73,4 @@ Route::post('/user-standar', [RegisterController::class, 'userStandar']);
 
 Route::post('/user-admin', [RegisterController::class, 'userAdmin']);
 
-Route::post('/address/{userId}', [AddressController::class, 'store']);
-
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
-
-Route::post('/user-pcd/{userId}', [PcdController::class, 'store']);
-

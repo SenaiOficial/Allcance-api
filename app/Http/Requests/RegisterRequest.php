@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Validation\Validator;
 
 class RegisterRequest extends FormRequest
 {
@@ -39,10 +41,22 @@ class RegisterRequest extends FormRequest
             'street_complement' => ['nullable', 'string', 'max:255'],
             'color' => ['required', 'string', 'max:20'],
             'job' => ['required', 'boolean'],
-            'pcd_type' => ['required', 'string', 'max:255'],
+            'pcd_type' => ['required', 'int'],
             'pcd' => ['required', 'array', 'max:255'],
             'pcd_acquired' => ['required', 'boolean'],
             'needed_assistance' => ['required', 'boolean'],
         ];
+        // if ($errors = $request->validator->errors()) {
+        // }
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();
+        
+        // Log dos erros de validação
+        Log::error('Erro de validação: ' . $errors->toJson());
+
+        parent::failedValidation($validator);
     }
 }

@@ -21,9 +21,7 @@ class UserService
 
   public function findUserByToken($token)
   {
-    if ($token === null) {
-      abort(404, 'Nenhum usuário encontrado');
-    }
+    if ($token === null) abort(404, 'Nenhum usuário encontrado');
 
     $userPcd = $this->userPcd->where('custom_token', $token)->first();
     $userAdmin = $this->userAdmin->where('custom_token', $token)->first();

@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('street_complement', 255)->nullable();
             $table->string('color', 20);
             $table->boolean('job');
-            $table->string('pcd_type');
+            $table->unsignedBigInteger('pcd_type');
             $table->json('pcd');
             $table->boolean('pcd_acquired');
             $table->boolean('needed_assistance');

@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\UserAdmin;
 use App\Models\UserPcd;
 use App\Models\UserStandar;
+use App\Models\UserDeficiency;
 
 class RegisterService
 {
@@ -21,15 +22,14 @@ class RegisterService
       $validatedData['password'] = Hash::make($validatedData['password']);
 
       if ($request->has('pass_code')) {
-        $providedToken = $validatedData['pass_code'];
-        $storedToken = InstitutionalToken::first()->institutional_token;
-
-        if ($providedToken !== $storedToken) {
-          return response()->json(['error' => 'Token inválido'], 400);
-        }
+        $this->validateAdminUser($validatedData);
       }
 
       $user = $model::create($validatedData);
+
+      if ($request->has('pcd')) {
+        $this->sendDeficiency($validatedData, $user);
+      }
 
       if (!$user) {
         Log::error('Erro ao criar usuário');
@@ -39,12 +39,12 @@ class RegisterService
       $accessToken = Str::random(60);
       $user->update(['custom_token' => $accessToken]);
 
-      $cookieController = app(CookieController::class);
-      return $cookieController->setAccessToken($accessToken);
+      return response()->json(['message' => 'Sessão iniciada', 'access_token' => $accessToken]);
     } catch (\Exception $e) {
       if ($e->getCode() == '23000') {
         return response()->json(['error' => 'Email ou CPF já cadastrado'], 400);
       }
+
       return response()->json(['errors' => $e->getMessage()], 400);
     }
   }
@@ -73,12 +73,32 @@ class RegisterService
     $cpfResult = $this->getCamp('cpf', $request->cpf);
 
     if (in_array(true, $emailResult) || in_array(true, $cpfResult)) {
-        return response()->json(['message' => 'Email ou CPF já cadastrado'], 404);
+      return response()->json(['message' => 'Email ou CPF já cadastrado'], 404);
     }
   }
 
   public function checkEmailorCPF($request)
   {
     return $this->checkExists($request);
+  }
+
+  private function sendDeficiency($validatedData, $user)
+  {
+    foreach ($validatedData['pcd'] as $deficiencyId) {
+      UserDeficiency::create([
+        'pcd_user_id' => $user->id,
+        'deficiency_id' => $deficiencyId,
+      ]);
+    }
+  }
+
+  private function validateAdminUser($validatedData)
+  {
+    $providedToken = $validatedData['pass_code'];
+    $storedToken = InstitutionalToken::first()->institutional_token;
+
+    if ($providedToken !== $storedToken) {
+      return response()->json(['error' => 'Token inválido'], 400);
+    }
   }
 }

@@ -19,7 +19,7 @@ class DashBoardController extends Controller
     try {
       $result = $this->pcdsReport->getReport();
 
-      return $result;
+      return response()->json($result);
     } catch (\Throwable $th) {
       Log::error($th);
 

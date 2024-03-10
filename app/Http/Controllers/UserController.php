@@ -71,8 +71,8 @@ class UserController extends Controller
             'street' => $user->street,
             'street_number' => $user->street_number,
             'street_complement' => $user->street_complement,
-            'pcd_type' => $user->pcd_type,
-            'pcd' => $user->pcd
+            'pcd_type' => $user->deficiencyTypes->description,
+            'pcd' => $user->pcdDeficiencies->map->deficiency->pluck('description')
         ];
     }
 
