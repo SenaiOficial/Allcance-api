@@ -10,47 +10,46 @@ class PcdsReport extends DashboardService
 {
   public function getReport()
   {
-    $report = Cache::remember('pcds_report', Carbon::now()->addDays(2), function () {
-      $totalByNeighborhood = UserPcd::select('neighborhood', \DB::raw('COUNT(*) as total'))
-        ->groupBy('neighborhood')
-        ->get()
-        ->keyBy('neighborhood')
-        ->toArray();
-
-      $pcdsByNeighborhood = UserPcd::select('neighborhood', 'pcd')
+    $report = Cache::remember('pcds_report', Carbon::now()->addDay(), function () {
+      $pcdsByNeighborhood = UserPcd::select('neighborhood', 'deficiency.description')
+        ->join('pcd_user_deficiency', 'pcd_users.id', '=', 'pcd_user_deficiency.pcd_user_id')
+        ->join('deficiency', 'pcd_user_deficiency.deficiency_id', '=', 'deficiency.id')
         ->get()
         ->groupBy('neighborhood')
         ->map(function ($group) {
-          return $group->groupBy('pcd')->map->count();
+          return $group->pluck('description')->countBy();
         });
 
-      return $this->calculate($totalByNeighborhood, $pcdsByNeighborhood);
+      return $this->calculate($pcdsByNeighborhood);
     });
 
     return $report;
   }
 
-  private function calculate($totalByNeighborhood, $pcdsByNeighborhood)
+  private function calculate($pcdsByNeighborhood)
   {
-    $totalByNeighborhood = [];
+    $reportData = [];
+
     foreach ($pcdsByNeighborhood as $neighborhood => $pcds) {
         $totalCount = array_sum($pcds->all());
-        $percentages = [];
-        $exactCounts = [];
+        $data = [];
 
         foreach ($pcds as $pcd => $count) {
             $percentage = ($count / $totalCount) * 100;
-            $percentages[$pcd] = intval($percentage, 2); 
 
-            $exactCounts[$pcd] = $count;
+            $data[] = [
+                'name' => $pcd,
+                'value' => $count,
+                'percentage' => intval($percentage),
+            ];
         }
 
-        $totalByNeighborhood[$neighborhood] = [
-            'percentage' => $percentages,
-            'count' => $exactCounts,
+        $reportData[] = [
+            'title' => $neighborhood,
+            'data' => $data,
         ];
     }
 
-    return $totalByNeighborhood;
+    return $reportData;
   }
 }

@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Address;
 use Illuminate\Routing\Controller;
-use App\Http\Requests\AddressRequest;
 use App\Models\UserPcd;
 use Illuminate\Http\Request;
 use App\Services\UserService;
-use Log;
 
 class AddressController extends Controller
 {
@@ -50,8 +48,6 @@ class AddressController extends Controller
 
     private function validateUser($user)
     {
-        if ($user->getTable() !== 'pcd_users') {
-            abort(401, 'Unauthorized');
-        }
+        if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
     }
 }

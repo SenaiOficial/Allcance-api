@@ -83,4 +83,14 @@ class UserPcd extends Model implements Authenticatable
     {
         return $this->hasMany(ResetPassword::class, 'email', 'email');
     }
+
+    public function deficiencyTypes()
+    {
+        return $this->belongsTo(DeficiencyTypes::class, 'pcd_type');
+    }
+
+    public function pcdDeficiencies()
+    {
+        return $this->hasMany(UserDeficiency::class, 'pcd_user_id', 'id');
+    }
 }
