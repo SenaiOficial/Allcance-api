@@ -3,108 +3,39 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Suggestions;
-use App\Services\UserService;
+use App\Services\SuggestionsService;
 
 class SuggestionsController extends Controller
 {
-    protected $userService;
+    protected $suggestionsService;
 
-    public function __construct(UserService $userService)
+    public function __construct(SuggestionsService $suggestionsService)
     {
-        $this->userService = $userService;
-    }
-
-    private function getUser(Request $request)
-    {
-        $bearer = $request->bearerToken();
-
-        $user = $this->userService->findUserByToken($bearer);
-
-        return $user;
+        $this->suggestionsService = $suggestionsService;
     }
 
     public function store(Request $request)
     {
-        $user = $this->getUser($request);
-
-        try {
-            $validatedData = $request->validate([
-                'content' => ['required', 'string', 'max:1000']
-            ]);
-
-            $validatedData['user'] = $user->first_name;
-
-            $suggestion = new Suggestions($validatedData);
-            $suggestion->save();
-            
-            return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
-        } catch (\Exception $e) {
-            return response()->json($e->getMessage(), 400);
-        }
+        return $this->suggestionsService->store($request);
     }
 
     public function update(Request $request, $id)
     {
-        $user = $this->getUser($request);
-
-        if($user->is_institution) {
-            $suggestion = Suggestions::find($id);
-
-            $suggestion->update(['approved' => true]);
-            $suggestion->save();
-    
-            return response()->json(['message' => 'Sugestão atualizada com sucesso!']);
-        } else {
-            return response()->json(['error' => 'Usuário não autorizado!'], 401);
-        }
+        return $this->suggestionsService->update($request, $id);
     }
 
     public function delete(Request $request, $id)
     {
-        $user = $this->getUser($request);
-
-        if ($user->is_institution) {
-            $suggestion = Suggestions::find($id);
-
-            $suggestion->delete();
-
-            return response()->json(['message' => 'Sugestão excluída com sucesso!']);
-        } else {
-            return response()->json(['error' => 'Usuário não autorizado!'], 401);
-        }
-    }
-
-    private function showSuggestions($approved)
-    {
-        try {
-            $suggestions = Suggestions::where('approved', $approved)->get();
-
-            foreach($suggestions as $suggestion) {
-                $formattedSuggestions[] = [
-                    'id' => $suggestion->id,
-                    'user' => $suggestion->user,
-                    'content' => $suggestion->content
-                ];
-            }
-
-            if ($suggestions->isEmpty()) {
-                return response()->json(['message' => 'Nenhuma sugestão encontrada']);
-            }
-
-            return response()->json(['suggestions' => $formattedSuggestions]);
-        } catch (\Exception $e) {
-            return response()->json($e->getMessage(), 400);
-        }
+        return $this->suggestionsService->delete($request, $id);
     }
 
     public function showApproved()
     {
-        return $this->showSuggestions(true);
+        return $this->suggestionsService->showApproved();
     }
 
     public function showSuggestionsReq()
     {
-        return $this->showSuggestions(false);
+        return $this->suggestionsService->showSuggestionsReq();
     }
 }
