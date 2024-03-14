@@ -12,7 +12,6 @@ class UserPcd extends Model implements Authenticatable
     use HasFactory;
 
     protected $table = 'pcd_users';
-
     protected $fillable = [
         'first_name',
         'last_name',
@@ -37,6 +36,8 @@ class UserPcd extends Model implements Authenticatable
         'pcd',
         'pcd_acquired',
         'needed_assistance',
+        'get_transport',
+        'transport_access',
         'custom_token'
     ];
 

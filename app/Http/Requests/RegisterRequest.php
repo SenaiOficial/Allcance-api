@@ -45,6 +45,8 @@ class RegisterRequest extends FormRequest
             'pcd' => ['required', 'array', 'max:255'],
             'pcd_acquired' => ['required', 'boolean'],
             'needed_assistance' => ['required', 'boolean'],
+            'get_transport' => ['required', 'boolean'],
+            'transport_access' => ['nullable', 'boolean']
         ];
         // if ($errors = $request->validator->errors()) {
         // }
