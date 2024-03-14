@@ -15,6 +15,7 @@ class UserAdmin extends Model implements Authenticatable
 
     protected $fillable = [
         'institution_name',
+        'profile_photo',
         'telephone',
         'cnpj',
         'pass_code',

@@ -40,10 +40,6 @@ class RegisterService
 
       return response()->json(['message' => 'Sessão iniciada', 'access_token' => $accessToken]);
     } catch (\Exception $e) {
-      if ($e->getCode() == '23000') {
-        return response()->json(['error' => 'Email ou CPF já cadastrado'], 400);
-      }
-
       return response()->json(['errors' => $e->getMessage()], 400);
     }
   }

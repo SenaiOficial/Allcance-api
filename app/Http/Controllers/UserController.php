@@ -96,6 +96,7 @@ class UserController extends Controller
     {
         return [
             'institution_name' => $user->institution_name,
+            'profile_photo' => $user->profile_photo,
             'telephone' => $user->telephone,
             'cnpj' => $user->cnpj,
             'is_institution' => $user->is_institution,
