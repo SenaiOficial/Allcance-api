@@ -2,52 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Address;
 use Illuminate\Routing\Controller;
-use App\Models\UserPcd;
 use Illuminate\Http\Request;
-use App\Services\UserService;
+use App\Services\AddressService;
 
 class AddressController extends Controller
 {
-    protected $userService;
+    protected $addressService;
 
-    public function __construct(UserService $userService)
+    public function __construct(AddressService $addressService)
     {
-        $this->userService = $userService;
-    }
-
-    private function getUser(Request $request)
-    {
-        $bearer = $request->bearerToken();
-
-        $user = $this->userService->findUserByToken($bearer);
-
-        return $user;
+        $this->addressService = $addressService;
     }
 
     public function update(Request $request)
     {
-        $user = $this->getUser($request);
-
-        $this->validateUser($user);
-
-        try {
-            $userId = $user->id;
-            $requestData = $request->only(['neighborhood', 'street', 'street_number', 'street_complement']);
-
-            $userPcd = UserPcd::find($userId);
-
-            $userPcd->update($requestData);
-
-            return response()->json(['message' => 'Campos atualizados com sucesso'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
-
-    private function validateUser($user)
-    {
-        if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
+        return $this->addressService->update($request);
     }
 }
