@@ -38,7 +38,7 @@ class SuggestionsService
       $suggestion = new Suggestions($validatedData);
       $suggestion->save();
 
-      return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
+      return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!'], 200);
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
@@ -69,7 +69,7 @@ class SuggestionsService
 
       $suggestion->delete();
 
-      return response()->json(['message' => 'Sugestão excluída com sucesso!']);
+      return response()->json(['message' => 'Sugestão excluída com sucesso!'], 200);
     } else {
       return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }

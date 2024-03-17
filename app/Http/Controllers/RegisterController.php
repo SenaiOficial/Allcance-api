@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\UserStandar;
 use App\Models\UserAdmin;
 use App\Models\UserPcd;
-use App\Models\InstitutionalToken;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\RegisterStandarUser;
 use App\Http\Requests\RegisterAdminRequest;
