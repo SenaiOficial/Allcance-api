@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Services\FeedsService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\AddressController;
@@ -20,6 +21,10 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
     Route::get('/logout', [CookieController::class, 'clearAccessToken']);
+
+    Route::prefix('feeds')->group(function() {
+        Route::get('/posts', [FeedsService::class, 'get']);
+    });
 
     Route::prefix('address')->group(function() {
         Route::put('/update-address', [AddressController::class, 'update']);
@@ -50,6 +55,10 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('deficiency')->group(function () {
             Route::post('/create-new-deficiency', [DeficiencyController::class, 'store']);
             Route::delete('/delete-deficiency/{id}', [DeficiencyController::class, 'delete']);
+        });
+
+        Route::prefix('feeds')->group(function() {
+            Route::post('/create-new-post', [FeedsService::class, 'store']);
         });
     });
 });

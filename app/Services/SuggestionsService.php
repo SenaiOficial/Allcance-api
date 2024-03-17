@@ -38,7 +38,7 @@ class SuggestionsService
       $suggestion = new Suggestions($validatedData);
       $suggestion->save();
 
-      return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!']);
+      return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!'], 200);
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
