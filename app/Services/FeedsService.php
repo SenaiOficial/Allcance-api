@@ -3,15 +3,18 @@
 namespace App\Services;
 
 use App\Models\Feeds;
+use App\Models\UserAdmin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class FeedsService
 {
   protected $userService;
-  protected $cache = 'feeds-cache';
+  protected $cacheFeeds = 'feeds-cache';
+  protected $cacheRanking = 'rank-cache';
 
   public function __construct(UserService $userService)
   {
@@ -28,6 +31,7 @@ class FeedsService
   protected function posts()
   {
     return Feeds::select(
+      'id',
       'profile_photo',
       'institution_name',
       'is_event',
@@ -43,7 +47,7 @@ class FeedsService
 
   public function get()
   {
-    $formattedPosts = Cache::remember($this->cache, Carbon::now()->addWeek(), function () {
+    $formattedPosts = Cache::remember($this->cacheFeeds, Carbon::now()->addWeek(), function () {
       $posts = $this->posts();
       $formattedPosts = [];
 
@@ -76,7 +80,7 @@ class FeedsService
         $feed = Feeds::create($validateData);
         $feed->save();
 
-        Cache::forget($this->cache);
+        $this->cleanCacheFeeds();
 
         return response()->json(['message' => 'Banner criado com sucesso!'], 200);
       } catch (\Exception $e) {
@@ -96,11 +100,47 @@ class FeedsService
 
       $post->delete();
 
-      Cache::forget($this->cache);
+      $this->cleanCacheFeeds();
 
       return response()->json(['message' => 'Post apagado com sucesso!'], 200);
     } else {
       return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }
+  }
+
+  public function getHighlightsInstitutions()
+  {
+    $institutions = Cache::remember($this->cacheRanking, Carbon::now()->addWeek(), function () {
+      $institutionsUsers = Feeds::select(
+        'admin_user_id',
+        DB::raw('count(*) as post_count'),
+        DB::raw('@rank := @rank + 1 as position')
+      )->join(DB::raw('(SELECT @rank := 0) as r'), function ($join) {
+        $join->on(DB::raw('1'), DB::raw('1'));
+      })
+        ->groupBy('admin_user_id')
+        ->orderByDesc('post_count')
+        ->get();
+
+      $institutions = [];
+      foreach ($institutionsUsers as $institutionsUser) {
+        $user = UserAdmin::find($institutionsUser->admin_user_id);
+        $institutions[] = [
+          'position' => $institutionsUser->position,
+          'profile_photo' => $user->profile_photo,
+          'user_name' => $user->institution_name,
+        ];
+      }
+
+      return $institutions;
+    });
+
+    return response()->json($institutions, 200);
+  }
+
+  protected function cleanCacheFeeds()
+  {
+    Cache::forget($this->cacheFeeds);
+    Cache::forget($this->cacheRanking);
   }
 }

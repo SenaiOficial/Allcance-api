@@ -28,6 +28,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('feeds')->group(function () {
         Route::get('/posts', [FeedsController::class, 'get']);
+        Route::get('/ranking', [FeedsController::class, 'getRanking']);
     });
 
     Route::prefix('address')->group(function () {

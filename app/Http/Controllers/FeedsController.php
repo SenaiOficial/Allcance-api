@@ -29,4 +29,9 @@ class FeedsController extends Controller
   {
     return $this->feedsService->delete($request, $id);
   }
+
+  public function getRanking()
+  {
+    return $this->feedsService->getHighlightsInstitutions();
+  }
 }
