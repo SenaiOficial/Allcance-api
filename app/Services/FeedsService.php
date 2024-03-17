@@ -6,7 +6,6 @@ use App\Models\Feeds;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Services\UserService;
-use App\Http\Requests\FeedsRequest;
 use Illuminate\Support\Facades\Cache;
 
 class FeedsService
@@ -55,13 +54,14 @@ class FeedsService
           'time' => 'Publicado ' . $published
         ];
       }
+
       return $formattedPosts;
     });
 
     return response()->json($formattedPosts, 200, [], JSON_UNESCAPED_SLASHES);
   }
 
-  public function store(FeedsRequest $request)
+  public function store($request)
   {
     $user = $this->user($request);
 
@@ -82,6 +82,23 @@ class FeedsService
       } catch (\Exception $e) {
         return response()->json([$e->getMessage()], 400);
       }
+    } else {
+      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+    }
+  }
+
+  public function delete(Request $request, $id)
+  {
+    $user = $this->user($request);
+
+    if ($user->is_institution) {
+      $post = Feeds::find($id);
+
+      $post->delete();
+
+      Cache::forget($this->cache);
+
+      return response()->json(['message' => 'Post apagado com sucesso!'], 200);
     } else {
       return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }

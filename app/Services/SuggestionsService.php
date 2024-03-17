@@ -69,7 +69,7 @@ class SuggestionsService
 
       $suggestion->delete();
 
-      return response()->json(['message' => 'Sugestão excluída com sucesso!']);
+      return response()->json(['message' => 'Sugestão excluída com sucesso!'], 200);
     } else {
       return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }
