@@ -2,38 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Http\Controllers\CookieController;
+use App\Services\LoginService;
 
 class LoginController extends Controller
 {
-    public function show()
+    protected $loginService;
+
+    public function __construct(LoginService $loginService)
     {
-        return view('auth.login');
+      $this->loginService = $loginService;
     }
 
     public function login(LoginRequest $request)
     {
-        $credentials = $request->getCredentials();
-        $guards = ['web', 'standar', 'admin'];
+        return $this->loginService->login($request);
+    }
 
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->attempt($credentials)) {
-                $user = Auth::guard($guard)->user();
-                break;
-            }
-        }
-
-        if (!isset($user)) {
-            return response()->json(['error' => 'Email ou senha inválidos!'], 401);
-        }
-
-        $accessToken = Str::random(60);
-        $user->update(['custom_token' => $accessToken]);
-
-        $cookieController = app(CookieController::class);
-        return $cookieController->setAccessToken($accessToken);
+    public function logout(Request $request)
+    {
+       return $this->loginService->logout($request);
     }
 }
