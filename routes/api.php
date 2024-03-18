@@ -9,7 +9,6 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\TokenController;
 use App\Http\Controllers\SuggestionsController;
-use App\Http\Controllers\CookieController;
 use App\Http\Controllers\ForgetPasswordController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashBoardController;
@@ -20,7 +19,7 @@ Route::get('/', function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
-    Route::get('/logout', [CookieController::class, 'clearAccessToken']);
+    Route::get('/logout', [LoginController::class, 'logout']);
 
     Route::prefix('dashboards')->group(function () {
         Route::get('/generate-dashboard-pcds', [DashBoardController::class, 'getPcdsReport']);
