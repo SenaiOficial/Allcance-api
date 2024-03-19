@@ -15,10 +15,14 @@ class FeedsService
   protected $userService;
   protected $cacheFeeds = 'feeds-cache';
   protected $cacheRanking = 'rank-cache';
+  protected $api_url;
+  protected $storage;
 
   public function __construct(UserService $userService)
   {
     $this->userService = $userService;
+    $this->api_url = env('APP_PRODUCTION_URL');
+    $this->storage = env('STORAGE_URL');
   }
 
   private function user(Request $request)
@@ -53,8 +57,10 @@ class FeedsService
 
       foreach ($posts as $post) {
         $published = Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i');
+        $image = $this->api_url . $this->storage . $post->image;
         $formattedPosts[] = [
           'post' => $post,
+          'image' => $image,
           'time' => 'Publicado ' . $published
         ];
       }
@@ -76,6 +82,7 @@ class FeedsService
         $validateData['profile_photo'] = $user->profile_photo;
         $validateData['institution_name'] = $user->institution_name;
         $validateData['published_at'] = Carbon::now();
+        $validateData['image'] = $request->file('image')->store('images', 'public');
 
         $feed = Feeds::create($validateData);
         $feed->save();

@@ -30,7 +30,7 @@ class FeedsRequest extends FormRequest
             'event_location' => ['nullable', 'max:100'],
             'title' => ['required', 'max:100'],
             'description' => ['required', 'max: 1000'],
-            'image' => ['nullable']
+            'image' => ['nullable', 'mimes: jpeg,png,jpg', 'max: 2048']
         ];
     }
 
