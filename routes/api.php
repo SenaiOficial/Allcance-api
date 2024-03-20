@@ -17,6 +17,10 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
+Route::get('/docker-health-check', function() {
+    return response('ok', 200);
+});
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
     Route::get('/logout', [LoginController::class, 'logout']);
