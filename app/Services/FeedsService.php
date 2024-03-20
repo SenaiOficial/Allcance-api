@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Services\UserService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class FeedsService
 {
@@ -80,7 +81,7 @@ class FeedsService
         $validateData = $request->validated();
         $image = $request->file('image');
         $filename = $image->hashName();
-        $request->file('image')->move(storage_path($this->storage), $filename);
+        Storage::disk('public')->put('images', $image);
         $validateData['admin_user_id'] = $user->id;
         $validateData['profile_photo'] = $user->profile_photo;
         $validateData['institution_name'] = $user->institution_name;
