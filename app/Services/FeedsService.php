@@ -78,18 +78,21 @@ class FeedsService
     if ($user->is_institution) {
       try {
         $validateData = $request->validated();
+        $image = $request->file('image');
+        $filename = $image->hashName();
+        $request->file('image')->move(public_path($this->storage), $filename);
         $validateData['admin_user_id'] = $user->id;
         $validateData['profile_photo'] = $user->profile_photo;
         $validateData['institution_name'] = $user->institution_name;
         $validateData['published_at'] = Carbon::now();
-        $validateData['image'] = $request->file('image')->store('images', 'public');
+        $validateData['image'] = $filename;
 
         $feed = Feeds::create($validateData);
         $feed->save();
 
         $this->cleanCacheFeeds();
 
-        return response()->json(['message' => 'Banner criado com sucesso!'], 200);
+        return response()->json(['message' => 'Post criado com sucesso!'], 200);
       } catch (\Exception $e) {
         return response()->json([$e->getMessage()], 400);
       }
