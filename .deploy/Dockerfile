@@ -3,6 +3,7 @@ FROM php:${PHP_VERSION}-fpm-alpine AS php-system-setup
 
 # Install the PHP pdo_mysql extention
 RUN docker-php-ext-install pdo_mysql
+RUN apk add --no-cache libcap
 
 # Install supervisord implementation
 COPY --from=ochinchina/supervisord:latest /usr/local/bin/supervisord /usr/local/bin/supervisord
