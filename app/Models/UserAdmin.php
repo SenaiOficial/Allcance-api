@@ -22,7 +22,8 @@ class UserAdmin extends Model implements Authenticatable
         'email',
         'password',
         'is_institution',
-        'custom_token'
+        'custom_token',
+        'refresh_token'
     ];
 
     public function getAuthIdentifierName()

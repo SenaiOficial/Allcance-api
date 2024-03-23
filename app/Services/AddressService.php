@@ -55,8 +55,8 @@ class AddressService
       'cep' => ['required', 'string', 'size:8'],
       'neighborhood' => ['required', 'string', 'max:100'],
       'street' => ['required', 'string', 'max:255'],
-      'street_number' => ['required', 'string', 'max:4'],
-      'street_complement' => ['required', 'string', 'max:255'],
+      'street_number' => ['required', 'numeric', 'max:4'],
+      'street_complement' => ['nullable', 'string', 'max:255'],
     ];
 
     $validator = Validator::make($data, $rules);
