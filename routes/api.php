@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ConfigurationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\FeedsController;
@@ -45,6 +46,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::prefix('password')->group(function () {
         Route::put('/reset-password', [ResetPasswordController::class, 'resetPassword']);
+    });
+
+    Route::prefix('configuration')->group(function () {
+        Route::get('/get-text-sizes', [ConfigurationController::class, 'getSizes']);
+        Route::get('/get-color-blindness', [ConfigurationController::class, 'getColorBlindness']);
+        Route::get('/get', [ConfigurationController::class, 'getConfig']);
+        Route::post('/create-config', [ConfigurationController::class, 'createConfig']);
     });
 
     Route::middleware(['admin'])->group(function () {
