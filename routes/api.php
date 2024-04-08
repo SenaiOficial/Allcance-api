@@ -52,7 +52,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/get-text-sizes', [ConfigurationController::class, 'getSizes']);
         Route::get('/get-color-blindness', [ConfigurationController::class, 'getColorBlindness']);
         Route::get('/get', [ConfigurationController::class, 'getConfig']);
-        Route::post('/create-config', [ConfigurationController::class, 'createConfig']);
+        Route::post('/create', [ConfigurationController::class, 'createConfig']);
     });
 
     Route::middleware(['admin'])->group(function () {
