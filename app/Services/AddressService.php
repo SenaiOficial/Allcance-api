@@ -29,7 +29,6 @@ class AddressService
   public function update(Request $request)
   {
       $user = $this->getUser($request);
-
       $this->validateUser($user);
 
       try {

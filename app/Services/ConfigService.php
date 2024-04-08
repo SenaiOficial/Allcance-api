@@ -43,6 +43,7 @@ class ConfigService
   public function createConfig(Request $request)
   {
     $user = $this->getUser($request);
+    $this->validateUser($user);
 
     try {
       $requestData = $request->validate([
@@ -63,7 +64,8 @@ class ConfigService
   public function getConfig(Request $request)
   {
     $user = $this->getUser($request);
-
+    $this->validateUser($user);
+    
     try {
       $config = Configuration::select('text_size_id', 'color_blindness_id')
         ->where('pcd_user_id', '=', $user->id)
@@ -90,5 +92,10 @@ class ConfigService
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
+  }
+
+  private function validateUser($user)
+  {
+      if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
   }
 }
