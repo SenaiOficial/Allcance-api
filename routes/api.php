@@ -55,7 +55,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/create', [ConfigurationController::class, 'createConfig']);
     });
 
-    Route::middleware(['admin'])->group(function () {
+    Route::middleware(['institution'])->group(function () {
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
         Route::prefix('suggestions')->group(function () {

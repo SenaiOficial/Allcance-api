@@ -50,10 +50,15 @@ class ConfigService
         'text_size_id' => 'required',
         'color_blindness_id' => 'required'
       ]);
-      $requestData['pcd_user_id'] = $user->id;
+      $config = Configuration::where('pcd_user_id', $user->id)->first();
 
-      $config = new Configuration($requestData);
-      $config->save();
+      if ($config) {
+        $config->update($requestData);
+      } else {
+        $requestData['pcd_user_id'] = $user->id;
+        $config = new Configuration($requestData);
+        $config->save();
+      }
 
       return response()->json(['message' => 'Configuração salva!']);
     } catch (\Exception $e) {
@@ -96,6 +101,6 @@ class ConfigService
 
   private function validateUser($user)
   {
-      if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
+    if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
   }
 }

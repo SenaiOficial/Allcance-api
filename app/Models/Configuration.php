@@ -11,6 +11,7 @@ class Configuration extends Model
 
     protected $table = 'configuration_users';
     protected $fillable = ['pcd_user_id', 'text_size_id', 'color_blindness_id'];
+    protected $primaryKey = 'pcd_user_id';
 
     public function text()
     {
