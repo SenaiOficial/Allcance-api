@@ -36,11 +36,6 @@ return [
     */
 
     'guards' => [
-        'web' => [ 
-            'driver' => 'session', 
-            'provedor' => 'users', 
-        ], 
-
         'api' => [
             'driver' => 'jwt',
             'provider' => 'pcd_users',
@@ -89,11 +84,6 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\UserAdmin::class,
         ],
-
-        // 'users_standar' => [
-        //     'driver' => 'multi',
-        //     'providers' => ['users', 'standar_user'],
-        // ],
     ],
 
     /*

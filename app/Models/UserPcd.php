@@ -48,9 +48,13 @@ class UserPcd extends Authenticatable implements JWTSubject
     ];
 
     protected $hidden = [
+        'id',
         'password',
         'custom_token',
-        'refresh_token'
+        'refresh_token',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 
     public function getJWTIdentifier()

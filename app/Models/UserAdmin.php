@@ -26,14 +26,19 @@ class UserAdmin extends Authenticatable implements JWTSubject
         'email',
         'password',
         'is_institution',
+        'is_admin',
         'custom_token',
         'refresh_token'
     ];
 
     protected $hidden = [
+        'id',
         'password',
         'custom_token',
-        'refresh_token'
+        'refresh_token',
+        'created_at',
+        'updated_at',
+        'deleted_at'
     ];
 
     public function getJWTIdentifier()

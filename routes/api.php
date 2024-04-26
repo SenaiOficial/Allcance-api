@@ -99,4 +99,4 @@ Route::post('/user-standar', [RegisterController::class, 'userStandar']);
 
 Route::post('/user-admin', [RegisterController::class, 'userAdmin']);
 
-Route::post('/login', [LoginController::class, 'login'])->name('api.login');
+Route::post('/login', [LoginController::class, 'login']);

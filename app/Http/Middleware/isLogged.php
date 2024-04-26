@@ -4,34 +4,22 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Services\UserService;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class isLogged
 {
-    protected $userService;
+    protected $guard;
 
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;
+        $this->guard = getActiveGuard();
     }
 
     public function handle(Request $request, Closure $next)
     {
+        if (auth($this->guard)->check()) {
+            return $next($request);
+        }
 
-        // $token = JWTAuth::getToken();
-        // $token = JWTAuth::parseToken();
-
-        dd(auth());
-
-        // JWTAuth::checkOrFail($token);
-        // $bearer = $request->bearerToken();
-        // $user = $this->userService->findUserByToken($bearer);
-
-        // if (!$bearer || !$user || !hash_equals($bearer, $user->custom_token)) {
-        //     return response()->json(['error' => 'Usuário não autenticado!'], 401);
-        // }
-
-        return $next($request);
+        return response()->json(['message' => 'Usuário não authenticado'], 401);
     }
 }

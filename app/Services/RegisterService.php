@@ -37,7 +37,9 @@ class RegisterService
         return response()->json(['error' => 'Erro ao criar usuário']);
       }
 
-      $token = JWTAuth::fromUser($user);
+      foreach (guards() as $guard) {
+        $token = JWTAuth::guard($guard)->fromUser($user);
+      }
 
       return response()->json([
         'status' => 'success',
