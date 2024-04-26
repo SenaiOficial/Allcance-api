@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
 use App\Models\ResetPassword;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class UserAdmin extends Model implements Authenticatable
+
+class UserAdmin extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    protected $guard = 'admin';
     protected $table = 'admin_user';
 
     protected $fillable = [
@@ -26,34 +30,20 @@ class UserAdmin extends Model implements Authenticatable
         'refresh_token'
     ];
 
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
+    protected $hidden = [
+        'password',
+        'custom_token',
+        'refresh_token'
+    ];
 
-    public function getAuthIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    public function getAuthPassword()
+    public function getJWTCustomClaims()
     {
-        return $this->password;
-    }
-
-    public function getRememberToken()
-    {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
+        return [];
     }
 
     public function resetPasswords()

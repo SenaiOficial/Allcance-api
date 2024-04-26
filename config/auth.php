@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'api',
         'passwords' => 'users',
     ],
 
@@ -36,18 +36,23 @@ return [
     */
 
     'guards' => [
-        'web' => [
-            'driver' => 'session',
+        'web' => [ 
+            'driver' => 'session', 
+            'provedor' => 'users', 
+        ], 
+
+        'api' => [
+            'driver' => 'jwt',
             'provider' => 'pcd_users',
         ],
 
         'standar' => [
-            'driver' => 'session',
+            'driver' => 'jwt',
             'provider' => 'standar_user',
         ],
 
         'admin' => [
-            'driver' => 'session',
+            'driver' => 'jwt',
             'provider' => 'admin_user',
         ],
     ],
@@ -85,10 +90,10 @@ return [
             'model' => App\Models\UserAdmin::class,
         ],
 
-        'users_standar' => [
-            'driver' => 'multi',
-            'providers' => ['users', 'standar_user'],
-        ],
+        // 'users_standar' => [
+        //     'driver' => 'multi',
+        //     'providers' => ['users', 'standar_user'],
+        // ],
     ],
 
     /*

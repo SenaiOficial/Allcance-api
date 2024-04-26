@@ -23,9 +23,9 @@ class UserService
   {
     if ($token === null) abort(404, 'Nenhum usuário encontrado');
 
-    $userPcd = $this->userPcd->where('custom_token', $token)->first();
-    $userAdmin = $this->userAdmin->where('custom_token', $token)->first();
-    $userStandar = $this->userStandar->where('custom_token', $token)->first();
+    $userPcd = $this->userPcd->where('refresh_token', $token)->first();
+    $userAdmin = $this->userAdmin->where('refresh_token', $token)->first();
+    $userStandar = $this->userStandar->where('refresh_token', $token)->first();
 
     return $userPcd ?? $userStandar ?? $userAdmin;
   }

@@ -24,7 +24,7 @@ class RegisterAdminRequest extends FormRequest
         return [
             'institution_name' => ['required', 'string', 'max:255'],
             'profile_photo' => ['nullable', 'string'],
-            'telephone' => ['required', 'string', 'max:20'],
+            'telephone' => ['required', 'string', 'max:10'],
             'cnpj' => ['required', 'unique:admin_user', 'size:14'],
             'pass_code' => ['required'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:standar_user', 'unique:admin_user'],

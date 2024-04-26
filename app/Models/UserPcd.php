@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
-use App\Models\ResetPassword;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class UserPcd extends Model implements Authenticatable
+class UserPcd extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    protected $guard = 'api';
     protected $table = 'pcd_users';
     protected $fillable = [
         'first_name',
@@ -38,60 +39,27 @@ class UserPcd extends Model implements Authenticatable
         'needed_assistance',
         'get_transport',
         'transport_access',
-        'custom_token'
+        'custom_token',
+        'refresh_token'
     ];
 
     protected $casts = [
         'pcd' => 'array'
     ];
 
-    public function getAge()
-    {
-        return now()->diffInYears($this->date_of_birth);
-    }
+    protected $hidden = [
+        'password',
+        'custom_token',
+        'refresh_token'
+    ];
 
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
-
-    public function getAuthIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    public function getAuthPassword()
+    public function getJWTCustomClaims()
     {
-        return $this->password;
-    }
-
-    public function getRememberToken()
-    {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
-    }
-
-    public function resetPasswords()
-    {
-        return $this->hasMany(ResetPassword::class, 'email', 'email');
-    }
-
-    public function deficiencyTypes()
-    {
-        return $this->belongsTo(DeficiencyTypes::class, 'pcd_type');
-    }
-
-    public function pcdDeficiencies()
-    {
-        return $this->hasMany(UserDeficiency::class, 'pcd_user_id', 'id');
+        return [];
     }
 }

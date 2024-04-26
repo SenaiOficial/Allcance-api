@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConfigurationController;
+use App\Services\RegisterService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\FeedsController;
@@ -22,7 +23,9 @@ Route::get('/docker-health-check', function() {
     return response('ok', 200);
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::get('/generate-token', [TokenController::class, 'generateToken']);
+
+Route::middleware(['auth:admin'])->group(function () {
     Route::get('/get-user', [UserController::class, 'getUserById']);
     Route::get('/logout', [LoginController::class, 'logout']);
 
@@ -56,7 +59,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['institution'])->group(function () {
-        Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
         Route::prefix('suggestions')->group(function () {
             Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
@@ -86,6 +88,8 @@ Route::prefix('deficiency')->group(function () {
     Route::get('get', [DeficiencyController::class, 'get']);
     Route::get('get-types', [DeficiencyController::class, 'getTypes']);
 });
+
+Route::get('/profile', [RegisterService::class, 'profile']);
 
 Route::post('/check-user-register', [RegisterController::class, 'checkExistUser']);
 

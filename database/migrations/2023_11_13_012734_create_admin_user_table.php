@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->boolean('is_institution')->default(true);
+            $table->boolean('is_admin')->default(true);
             $table->string('custom_token')->nullable();
+            $table->string('refresh_token')->nullable();
             $table->timestamps();
         });
     }
