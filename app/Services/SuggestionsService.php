@@ -2,41 +2,40 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
+use DB;
 use Illuminate\Http\Request;
 use App\Models\Suggestions;
-use App\Services\UserService;
 
 class SuggestionsService
 {
-  protected $userService;
+  protected $guard;
 
-  public function __construct(UserService $userService)
+  public function __construct()
   {
-    $this->userService = $userService;
-  }
-
-  private function getUser(Request $request)
-  {
-    $bearer = $request->bearerToken();
-
-    $user = $this->userService->findUserByToken($bearer);
-
-    return $user;
+    $this->guard = getActiveGuard();
   }
 
   public function store(Request $request)
   {
-    $user = $this->getUser($request);
+    $user = auth($this->guard)->user();
+    $type = $user->getTable();
+    $user_id = $user->id;
+    $postValidate = $this->validateTimePost($type, $user_id);
 
     try {
-      $validatedData = $request->validate([
-        'content' => ['required', 'string', 'max:1000']
+      if ($postValidate) {
+        return response()->json(['message' => 'Você já fez uma postagem hoje, tente novamente outro dia.'], 400);
+      }
+
+      $content = $request->validate(['content' => 'required|string|max:1000']);
+
+      Suggestions::create([
+        'content' => $content['content'],
+        'user_id' => $user_id,
+        'type' => $type,
+        'user' => $user->first_name ?? $user->institution_name
       ]);
-
-      $validatedData['user'] = $user->first_name;
-
-      $suggestion = new Suggestions($validatedData);
-      $suggestion->save();
 
       return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!'], 200);
     } catch (\Exception $e) {
@@ -46,9 +45,9 @@ class SuggestionsService
 
   public function update(Request $request, $id)
   {
-    $user = $this->getUser($request);
+    $user = auth($this->guard)->user();
 
-    if ($user->is_institution) {
+    if ($user->is_admin) {
       $suggestion = Suggestions::find($id);
 
       $suggestion->update(['approved' => true]);
@@ -62,9 +61,9 @@ class SuggestionsService
 
   public function delete(Request $request, $id)
   {
-    $user = $this->getUser($request);
+    $user = auth($this->guard)->user();
 
-    if ($user->is_institution) {
+    if ($user->is_admin) {
       $suggestion = Suggestions::find($id);
 
       $suggestion->delete();
@@ -73,6 +72,16 @@ class SuggestionsService
     } else {
       return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }
+  }
+
+  public function showApproved()
+  {
+    return $this->showSuggestions(true);
+  }
+
+  public function showSuggestionsReq()
+  {
+    return $this->showSuggestions(false);
   }
 
   private function showSuggestions($approved)
@@ -98,13 +107,14 @@ class SuggestionsService
     }
   }
 
-  public function showApproved()
+  private function validateTimePost($type, $user_id)
   {
-    return $this->showSuggestions(true);
-  }
+    $post = DB::table('suggestions')
+      ->where('user_id', '=', $user_id)
+      ->where('type', '=', $type)
+      ->whereDate('created_at', Carbon::today())
+      ->first();
 
-  public function showSuggestionsReq()
-  {
-    return $this->showSuggestions(false);
+    if (isset($post)) return true;
   }
 }

@@ -9,9 +9,13 @@ class Configuration extends Model
 {
     use HasFactory;
 
-    protected $table = 'configuration_users';
-    protected $fillable = ['pcd_user_id', 'text_size_id', 'color_blindness_id'];
-    protected $primaryKey = 'pcd_user_id';
+    protected $table = 'configuration';
+    protected $fillable = [
+        'user_id',
+        'type',
+        'text_size_id',
+        'color_blindness_id'
+    ];
 
     public function text()
     {

@@ -44,7 +44,12 @@ class UserPcd extends Authenticatable implements JWTSubject
     ];
 
     protected $casts = [
-        'pcd' => 'array'
+        'job' => 'boolean',
+        'pcd' => 'array',
+        'pcd_acquired' => 'boolean',
+        'needed_assistance' => 'boolean',
+        'get_transport' => 'boolean',
+        'transport_access' => 'boolean' 
     ];
 
     protected $hidden = [
@@ -65,5 +70,26 @@ class UserPcd extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public function getGuard()
+    {
+        return $this->guard;
+    }
+
+    public function resetPasswords()
+    {
+        return $this->hasMany(ResetPassword::class, 'email', 'email');
+    }
+
+    public function deficiencyTypes()
+    {
+        return $this->belongsTo(DeficiencyTypes::class, 'pcd_type');
+    }
+
+    public function pcdDeficiencies()
+    {
+        return $this->hasMany(UserDeficiency::class, 'pcd_user_id', 'id');
+
     }
 }

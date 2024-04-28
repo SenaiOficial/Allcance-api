@@ -55,4 +55,9 @@ class UserAdmin extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(ResetPassword::class, 'email', 'email');
     }
+
+    public function getGuard()
+    {
+        return $this->guard;
+    }
 }

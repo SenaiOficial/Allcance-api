@@ -25,8 +25,9 @@ Route::get('/docker-health-check', function() {
 
 Route::get('/generate-token', [TokenController::class, 'generateToken']);
 
-Route::middleware(['auth:admin'])->group(function () {
-    Route::get('/get-user', [UserController::class, 'getUserById']);
+Route::middleware(['auth'])->group(function () {
+    Route::get('/get-user', [UserController::class, 'me']);
+    Route::get('/get-deficiencies', [UserController::class, 'getDeficiencies']);
     Route::get('/logout', [LoginController::class, 'logout']);
 
     Route::prefix('dashboards')->group(function () {
@@ -59,7 +60,6 @@ Route::middleware(['auth:admin'])->group(function () {
     });
 
     Route::middleware(['institution'])->group(function () {
-
         Route::prefix('suggestions')->group(function () {
             Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
             Route::put('/approve/{id}', [SuggestionsController::class, 'update']);

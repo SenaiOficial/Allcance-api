@@ -3,16 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\UserService;
 use Illuminate\Support\Facades\Hash;
 
 class ResetPasswordController extends Controller
 {
-  protected $userService;
+  protected $guard;
 
-  public function __construct(UserService $userService)
+  public function __construct()
   {
-    $this->userService = $userService;
+    $this->guard = getActiveGuard();
   }
 
   public function resetPassword(Request $request)
@@ -24,7 +23,7 @@ class ResetPasswordController extends Controller
         'confirm_password' => 'required|same:new_password'
       ]);
 
-      $user = $this->getUser($request);
+      $user = auth($this->guard)->user();
 
       if (!Hash::check($request->password, $user->password)) {
         return response()->json(['message' => 'Senha atual incorreta'], 400);
@@ -38,14 +37,5 @@ class ResetPasswordController extends Controller
     } catch (\Exception $e) {
       return response()->json(['message' => 'Erro ao redefinir a senha: ' . $e->getMessage()], 500);
     }
-  }
-
-  private function getUser(Request $request)
-  {
-    $bearer = $request->bearerToken();
-
-    $user = $this->userService->findUserByToken($bearer);
-
-    return $user;
   }
 }

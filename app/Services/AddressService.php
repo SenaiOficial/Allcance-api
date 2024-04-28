@@ -2,7 +2,6 @@
 
 namespace app\Services;
 
-use App\Services\UserService;
 use App\Models\UserPcd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -10,26 +9,9 @@ use Illuminate\Validation\ValidationException;
 
 class AddressService
 {
-  protected $userService;
-
-  public function __construct(UserService $userService)
-  {
-      $this->userService = $userService;
-  }
-
-  private function getUser(Request $request)
-  {
-      $bearer = $request->bearerToken();
-
-      $user = $this->userService->findUserByToken($bearer);
-
-      return $user;
-  }
-
   public function update(Request $request)
   {
-      $user = $this->getUser($request);
-      $this->validateUser($user);
+      $user = auth('api')->user();
 
       try {
           $requestData = $request->only(['cep', 'neighborhood', 'street', 'street_number', 'street_complement']);

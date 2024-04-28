@@ -4,27 +4,10 @@ namespace App\Services;
 
 use App\Models\Deficiency;
 use App\Models\DeficiencyTypes;
-use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class DeficiencyService
 {
-  protected $userService;
-
-  public function __construct(UserService $userService)
-  {
-    $this->userService = $userService;
-  }
-
-  private function getUser(Request $request)
-  {
-    $bearer = $request->bearerToken();
-
-    $user = $this->userService->findUserByToken($bearer);
-
-    return $user;
-  }
-
   public function sendDeficiencyTypes()
   {
     $deficiencyTypes = DeficiencyTypes::all(['id', 'description']);
@@ -41,7 +24,9 @@ class DeficiencyService
 
   public function store(Request $request)
   {
-    if ($this->getUser($request)->is_institution) {
+    $user = auth('admin')->user();
+    //super admin
+    if ($user->is_admin) {
       try {
         $validatedData = $request->validate([
           'description' => ['required', 'string', 'max:75']
@@ -61,10 +46,12 @@ class DeficiencyService
 
   public function delete(Request $request, $id)
   {
-    if ($this->getUser($request)->is_institution) {
+
+    $user = auth('admin')->user();
+    //super admin
+    if ($user->is_admin) {
       try {
         $newDeficiency = Deficiency::find($id);
-
         $newDeficiency->delete();
 
         return response()->json(['message' => 'Campo excluído com sucesso!']);

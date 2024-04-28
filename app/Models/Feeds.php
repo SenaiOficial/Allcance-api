@@ -23,6 +23,18 @@ class Feeds extends Model
         'image',
         'published_at'
     ];
+
+    protected $cast = [
+        'is_event' => 'boolean',
+    ];
+
+    protected $hidden = [
+        'admin_user_id',
+        'image',
+        'created_at',
+        'updated_at',
+        'published_at',
+    ];
     
     public function adminUser()
     {

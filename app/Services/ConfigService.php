@@ -5,23 +5,16 @@ namespace App\Services;
 use App\Models\ColorBlindness;
 use App\Models\Configuration;
 use App\Models\TextSize;
+use DB;
 use Illuminate\Http\Request;
-use App\Services\UserService;
 
 class ConfigService
 {
-  protected $userService;
+  protected $guard;
 
-  public function __construct(UserService $userService)
+  public function __construct()
   {
-    $this->userService = $userService;
-  }
-
-  private function getUser(Request $request)
-  {
-    $bearer = $request->bearerToken();
-    $user = $this->userService->findUserByToken($bearer);
-    return $user;
+    $this->guard = getActiveGuard();
   }
 
   private function getDatas($model)
@@ -42,22 +35,29 @@ class ConfigService
 
   public function createConfig(Request $request)
   {
-    $user = $this->getUser($request);
-    $this->validateUser($user);
+    $user = auth($this->guard)->user();
+    $user_id = $user->id;
+    $type = $user->getTable();
 
     try {
       $requestData = $request->validate([
         'text_size_id' => 'required',
         'color_blindness_id' => 'required'
       ]);
-      $config = Configuration::where('pcd_user_id', $user->id)->first();
+
+      $config = Configuration::where('user_id', $user_id)
+        ->where('type', $type)
+        ->first();
 
       if ($config) {
         $config->update($requestData);
       } else {
-        $requestData['pcd_user_id'] = $user->id;
-        $config = new Configuration($requestData);
-        $config->save();
+        Configuration::create([
+          'user_id' => $user_id,
+          'type' => $type,
+          'text_size_id' => $requestData['text_size_id'],
+          'color_blindness_id' => $requestData['color_blindness_id']
+        ]);
       }
 
       return response()->json(['message' => 'Configuração salva!']);
@@ -68,12 +68,12 @@ class ConfigService
 
   public function getConfig(Request $request)
   {
-    $user = $this->getUser($request);
-    $this->validateUser($user);
-    
+    $user = auth($this->guard)->user();
+
     try {
       $config = Configuration::select('text_size_id', 'color_blindness_id')
-        ->where('pcd_user_id', '=', $user->id)
+        ->where('user_id', '=', $user->id)
+        ->where('type', '=', $user->getTable())
         ->first();
 
       if ($config) {
@@ -97,10 +97,5 @@ class ConfigService
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
-  }
-
-  private function validateUser($user)
-  {
-    if ($user->getTable() !== 'pcd_users') abort(401, 'Unauthorized');
   }
 }

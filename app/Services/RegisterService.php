@@ -32,14 +32,7 @@ class RegisterService
         $this->sendDeficiency($validatedData, $user);
       }
 
-      if (!$user) {
-        Log::error('Erro ao criar usuário');
-        return response()->json(['error' => 'Erro ao criar usuário']);
-      }
-
-      foreach (guards() as $guard) {
-        $token = JWTAuth::guard($guard)->fromUser($user);
-      }
+      $token = auth()->guard($user->getGuard())->login($user);
 
       return response()->json([
         'status' => 'success',

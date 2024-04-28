@@ -57,4 +57,14 @@ class UserStandar extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function getGuard()
+    {
+        return $this->guard;
+    }
+
+    public function resetPasswords()
+    {
+        return $this->hasMany(ResetPassword::class, 'email', 'email');
+    }
 }

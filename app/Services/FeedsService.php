@@ -6,48 +6,26 @@ use App\Models\Feeds;
 use App\Models\UserAdmin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Services\UserService;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class FeedsService
 {
-  protected $userService;
   protected $cacheFeeds = 'feeds-cache';
   protected $cacheRanking = 'rank-cache';
   protected $api_url;
   protected $storage;
 
-  public function __construct(UserService $userService)
+  public function __construct()
   {
-    $this->userService = $userService;
     $this->api_url = env('APP_PRODUCTION_URL');
     $this->storage = env('STORAGE_URL');
   }
 
-  private function user(Request $request)
-  {
-    $bearer = $request->bearerToken();
-
-    return $this->userService->findUserByToken($bearer);
-  }
-
   protected function posts()
   {
-    return Feeds::select(
-      'id',
-      'profile_photo',
-      'institution_name',
-      'is_event',
-      'event_date',
-      'event_time',
-      'event_location',
-      'title',
-      'description',
-      'image',
-      'published_at'
-    )->get();
+    return Feeds::all();
   }
 
   public function get()
@@ -74,9 +52,9 @@ class FeedsService
 
   public function store($request)
   {
-    $user = $this->user($request);
+    $user = auth('admin')->user();
 
-    if ($user->is_institution) {
+    if ($user->is_institution || $user->is_admin) {
       try {
         $validateData = $request->validated();
         $image = $request->file('image');
@@ -104,9 +82,9 @@ class FeedsService
 
   public function delete(Request $request, $id)
   {
-    $user = $this->user($request);
+    $user = auth('admin')->user();
 
-    if ($user->is_institution) {
+    if ($user->is_institution || $user->is_admin) {
       $post = Feeds::find($id);
 
       $post->delete();
