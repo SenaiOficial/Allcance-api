@@ -33,4 +33,14 @@ class DeficiencyController extends Controller
   {
     return $this->deficiencyService->delete($request, $id);
   }
+
+  public function getDeficiencies()
+  {
+    $user = auth('api')->user();
+
+    return response()->json([
+      'deficiency_type' => $user->deficiencyTypes->description,
+      'deficiency' => $user->pcdDeficiencies->map->deficiency
+    ]);
+  }
 }

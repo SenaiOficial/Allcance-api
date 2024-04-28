@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\ColorBlindness;
 use App\Models\Configuration;
 use App\Models\TextSize;
-use DB;
 use Illuminate\Http\Request;
 
 class ConfigService

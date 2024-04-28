@@ -9,7 +9,7 @@ class AdminMiddleware
 {
   public function handle(Request $request, Closure $next)
   {
-    if (auth()->guard('admin')->check()) {
+    if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->is_institution) {
       return $next($request);
     }
 

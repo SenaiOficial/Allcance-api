@@ -5,11 +5,10 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class isLogged
+class AuthenticateBearer
 {
     public function handle(Request $request, Closure $next)
     {
-
         if (auth()->guard(getActiveGuard())->check()) {            
             return $next($request);
         }

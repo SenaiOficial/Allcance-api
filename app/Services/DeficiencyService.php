@@ -30,12 +30,12 @@ class DeficiencyService
       try {
         $validatedData = $request->validate([
           'description' => ['required', 'string', 'max:75']
-      ]);
+        ]);
 
-      $newDeficiency = new Deficiency($validatedData);
-      $newDeficiency->save();
+        $newDeficiency = new Deficiency($validatedData);
+        $newDeficiency->save();
 
-      return response()->json(['message' => 'Novo campo adicionado com sucesso!']);
+        return response()->json(['message' => 'Novo campo adicionado com sucesso!']);
       } catch (\Exception $e) {
         return response()->json($e->getMessage(), 400);
       }
@@ -59,7 +59,7 @@ class DeficiencyService
         return response()->json($e->getMessage(), 400);
       }
     } else {
-        return response()->json(['error' => 'Usuário não autorizado!'], 401);
+      return response()->json(['error' => 'Usuário não autorizado!'], 401);
     }
   }
 }

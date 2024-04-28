@@ -19,15 +19,13 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::get('/docker-health-check', function() {
+Route::get('/docker-health-check', function () {
     return response('ok', 200);
 });
 
-Route::get('/generate-token', [TokenController::class, 'generateToken']);
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'me']);
-    Route::get('/get-deficiencies', [UserController::class, 'getDeficiencies']);
+    Route::get('/get-deficiencies', [DeficiencyController::class, 'getDeficiencies']);
     Route::get('/logout', [LoginController::class, 'logout']);
 
     Route::prefix('dashboards')->group(function () {
@@ -75,6 +73,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
         });
+    });
+
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/generate-token', [TokenController::class, 'generateToken']);
     });
 });
 
