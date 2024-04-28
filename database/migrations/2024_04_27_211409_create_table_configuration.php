@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('configuration_users', function (Blueprint $table) {
-            $table->unsignedBigInteger('pcd_user_id');
+        Schema::create('configuration', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('type');
             $table->unsignedBigInteger('text_size_id');
             $table->unsignedBigInteger('color_blindness_id');
-            $table->foreign('pcd_user_id')->references('id')->on('pcd_users')->onDelete('cascade');
             $table->foreign('text_size_id')->references('id')->on('text_size')->onDelete('cascade');
             $table->foreign('color_blindness_id')->references('id')->on('color_blindness')->onDelete('cascade');
-            $table->primary(['pcd_user_id', 'text_size_id', 'color_blindness_id']);
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('configuration_users');
+        Schema::dropIfExists('configuration');
     }
 };

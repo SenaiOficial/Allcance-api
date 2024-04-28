@@ -2,56 +2,39 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Services\UserService;
-
 class LoginService
 {
-  protected $userService;
+  protected $guard;
 
-  public function __construct(UserService $userService)
+  public function __construct()
   {
-    $this->userService = $userService;
-  }
-
-  private function user(Request $request)
-  {
-    $bearer = $request->bearerToken();
-
-    $user = $this->userService->findUserByToken($bearer);
-
-    return $user;
+    $this->guard = getActiveGuard();
   }
 
   public function login($request)
   {
     $credentials = $request->getCredentials();
-    $guards = ['web', 'standar', 'admin'];
 
-    foreach ($guards as $guard) {
-        if (Auth::guard($guard)->attempt($credentials)) {
-            $user = Auth::guard($guard)->user();
-            break;
-        }
+    foreach (guards() as $guard) {
+      if ($token = auth($guard)->attempt($credentials)) {
+        return response()->json([
+          'success' => true,
+          'message' => 'Sessão iniciada',
+          'access_token' => $token,
+          'type' => 'bearer'
+        ]);
+      }
     }
 
-    if (!isset($user)) {
-        return response()->json(['error' => 'Email ou senha inválidos!'], 401);
-    }
-
-    $accessToken = Str::random(60);
-    $user->update(['custom_token' => $accessToken]);
-
-    return response()->json(['message' => 'Sessão iniciada', 'access_token' => $accessToken]);
+    return response()->json([
+      'success' => false,
+      'error' => 'Email ou senha inválidos!'
+    ], 401);
   }
 
-  public function logout($request)
+  public function logout()
   {
-    $user = $this->user($request);
-    $user->custom_token = null;
-    $user->save();
+    if (auth($this->guard)->check()) auth($this->guard)->logout();
 
     return response()->json(['message' => 'Sessão finalizada'], 200);
   }

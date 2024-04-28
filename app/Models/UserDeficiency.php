@@ -9,7 +9,15 @@ class UserDeficiency extends Model
     protected $table = 'pcd_user_deficiency';
 
     protected $fillable = [
-        'pcd_user_id', 'deficiency_id',
+        'pcd_user_id',
+        'deficiency_id',
+    ];
+
+    protected $hidden = [
+        'pcd_user_id',
+        'deficiency_id',
+        'created_at',
+        'updated_at',
     ];
 
     public function deficiency()

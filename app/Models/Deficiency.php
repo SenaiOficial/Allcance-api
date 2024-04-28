@@ -12,6 +12,11 @@ class Deficiency extends Model
     protected $table = 'deficiency';
     protected $labels = ['description'];
     protected $fillable = ['description'];
+    protected $hidden = [
+        'id',
+        'created_at',
+        'updated_at',
+    ];
 
     public function pcdUser()
     {

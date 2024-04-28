@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConfigurationController;
+use App\Services\RegisterService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeficiencyController;
 use App\Http\Controllers\FeedsController;
@@ -18,12 +19,13 @@ Route::get('/', function () {
     return "It's alive!";
 });
 
-Route::get('/docker-health-check', function() {
+Route::get('/docker-health-check', function () {
     return response('ok', 200);
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/get-user', [UserController::class, 'getUserById']);
+    Route::get('/get-user', [UserController::class, 'me']);
+    Route::get('/get-deficiencies', [DeficiencyController::class, 'getDeficiencies']);
     Route::get('/logout', [LoginController::class, 'logout']);
 
     Route::prefix('dashboards')->group(function () {
@@ -55,9 +57,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/create', [ConfigurationController::class, 'createConfig']);
     });
 
-    Route::middleware(['admin'])->group(function () {
-        Route::get('/generate-token', [TokenController::class, 'generateToken']);
-
+    Route::middleware(['institution'])->group(function () {
         Route::prefix('suggestions')->group(function () {
             Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
             Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
@@ -74,6 +74,10 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
         });
     });
+
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/generate-token', [TokenController::class, 'generateToken']);
+    });
 });
 
 Route::prefix('password')->group(function () {
@@ -87,6 +91,8 @@ Route::prefix('deficiency')->group(function () {
     Route::get('get-types', [DeficiencyController::class, 'getTypes']);
 });
 
+Route::get('/profile', [RegisterService::class, 'profile']);
+
 Route::post('/check-user-register', [RegisterController::class, 'checkExistUser']);
 
 Route::post('/user-pcd', [RegisterController::class, 'userPcd']);
@@ -95,4 +101,4 @@ Route::post('/user-standar', [RegisterController::class, 'userStandar']);
 
 Route::post('/user-admin', [RegisterController::class, 'userAdmin']);
 
-Route::post('/login', [LoginController::class, 'login'])->name('api.login');
+Route::post('/login', [LoginController::class, 'login']);

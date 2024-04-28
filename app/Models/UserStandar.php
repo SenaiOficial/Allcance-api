@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use App\Models\ResetPassword;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class UserStandar extends Model implements Authenticatable
+
+class UserStandar extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    protected $guard = 'standar';
     protected $table = 'standar_user';
 
     protected $fillable = [
@@ -25,37 +29,38 @@ class UserStandar extends Model implements Authenticatable
         'city',
         'email',
         'password',
-        'custom_token'
+        'custom_token',
+        'refresh_token'
     ];
 
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
+    protected $hidden = [
+        'id',
+        'password',
+        'custom_token',
+        'refresh_token',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
-    public function getAuthIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    public function getAuthPassword()
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
     {
-        return $this->password;
+        return [];
     }
 
-    public function getRememberToken()
+    public function getGuard()
     {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
+        return $this->guard;
     }
 
     public function resetPasswords()

@@ -3,14 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable;
-use App\Models\ResetPassword;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class UserPcd extends Model implements Authenticatable
+class UserPcd extends Authenticatable implements JWTSubject
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
+    protected $guard = 'api';
     protected $table = 'pcd_users';
     protected $fillable = [
         'first_name',
@@ -38,46 +39,42 @@ class UserPcd extends Model implements Authenticatable
         'needed_assistance',
         'get_transport',
         'transport_access',
-        'custom_token'
+        'custom_token',
+        'refresh_token'
     ];
 
     protected $casts = [
-        'pcd' => 'array'
+        'job' => 'boolean',
+        'pcd' => 'array',
+        'pcd_acquired' => 'boolean',
+        'needed_assistance' => 'boolean',
+        'get_transport' => 'boolean',
+        'transport_access' => 'boolean' 
     ];
 
-    public function getAge()
-    {
-        return now()->diffInYears($this->date_of_birth);
-    }
+    protected $hidden = [
+        'id',
+        'password',
+        'custom_token',
+        'refresh_token',
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
-    public function getAuthIdentifierName()
-    {
-        return 'id';
-    }
-
-    public function getAuthIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
-    public function getAuthPassword()
+    public function getJWTCustomClaims()
     {
-        return $this->password;
+        return [];
     }
 
-    public function getRememberToken()
+    public function getGuard()
     {
-        return $this->remember_token;
-    }
-
-    public function setRememberToken($value)
-    {
-        $this->remember_token = $value;
-    }
-
-    public function getRememberTokenName()
-    {
-        return 'remember_token';
+        return $this->guard;
     }
 
     public function resetPasswords()
@@ -93,5 +90,6 @@ class UserPcd extends Model implements Authenticatable
     public function pcdDeficiencies()
     {
         return $this->hasMany(UserDeficiency::class, 'pcd_user_id', 'id');
+
     }
 }

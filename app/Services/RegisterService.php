@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\InstitutionalToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use App\Models\UserAdmin;
 use App\Models\UserPcd;
 use App\Models\UserStandar;
 use App\Models\UserDeficiency;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RegisterService
 {
@@ -30,15 +32,14 @@ class RegisterService
         $this->sendDeficiency($validatedData, $user);
       }
 
-      if (!$user) {
-        Log::error('Erro ao criar usuário');
-        return response()->json(['error' => 'Erro ao criar usuário']);
-      }
+      $token = auth()->guard($user->getGuard())->login($user);
 
-      $accessToken = Str::random(60);
-      $user->update(['custom_token' => $accessToken]);
-
-      return response()->json(['message' => 'Sessão iniciada', 'access_token' => $accessToken]);
+      return response()->json([
+        'status' => 'success',
+        'message' => 'Sessão iniciada',
+        'refresh_token' => $token,
+        'type' => 'bearer'
+    ]);
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 400);
     }

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Contracts\Validation\Validator;
 
 class RegisterStandarUser extends FormRequest
 {
@@ -39,6 +41,17 @@ class RegisterStandarUser extends FormRequest
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             ],
             'confirm_password' => ['required', 'same:password'],
+            // 'guard' => ['required']
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();
+        
+        // Log dos erros de validação
+        Log::error('Erro de validação: ' . $errors->toJson());
+
+        parent::failedValidation($validator);
     }
 }
