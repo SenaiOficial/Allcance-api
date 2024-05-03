@@ -25,6 +25,11 @@ class FeedsController extends Controller
     return $this->feedsService->store($request);
   }
 
+  public function update(Request $request, $id)
+  {
+    return $this->feedsService->update($request, $id);
+  }
+
   public function delete(Request $request, $id)
   {
     return $this->feedsService->delete($request, $id);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ConfigurationController;
+use App\Http\Controllers\InstitutionController;
 use App\Services\RegisterService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DeficiencyController;
@@ -71,12 +72,17 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('feeds')->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
+            Route::put('/update-post/{id}', [FeedsController::class, 'update']);
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
         });
     });
 
     Route::middleware(['admin'])->group(function () {
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
+        Route::prefix('institution')->group(function () {
+            Route::get('/get-all', [InstitutionController::class, 'get']);
+            Route::get('/get/{param}', [InstitutionController::class, 'getInstitutions']);
+        });
     });
 });
 
