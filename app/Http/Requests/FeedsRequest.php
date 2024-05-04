@@ -23,13 +23,19 @@ class FeedsRequest extends FormRequest
      */
     public function rules(): array
     {
+        if (request()->isMethod('post')) {
+            $rule = 'required';
+        } else if (request()->isMethod('put')) {
+            $rule = 'sometimes';
+        }
+
         return [
-            'is_event' => ['required', 'boolean'],
+            'is_event' => [$rule, 'boolean'],
             'event_date' => ['nullable', 'date'],
             'event_time' => ['nullable', 'size:6'],
             'event_location' => ['nullable', 'max:100'],
-            'title' => ['required', 'max:100'],
-            'description' => ['required', 'max: 1000'],
+            'title' => [$rule, 'max:100'],
+            'description' => [$rule, 'max: 1000'],
             'image' => ['nullable', 'max:2048', 'mimes:jpeg,jpg,png']
         ];
     }

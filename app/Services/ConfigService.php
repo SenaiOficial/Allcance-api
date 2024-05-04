@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class ConfigService
 {
-  protected $guard;
+  protected $user;
 
   public function __construct()
   {
-    $this->guard = getActiveGuard();
+    $this->user = auth(getActiveGuard())->user();
   }
 
   private function getDatas($model)
@@ -34,7 +34,7 @@ class ConfigService
 
   public function createConfig(Request $request)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
     $user_id = $user->id;
     $type = $user->getTable();
 
@@ -67,7 +67,7 @@ class ConfigService
 
   public function getConfig(Request $request)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
 
     try {
       $config = Configuration::select('text_size_id', 'color_blindness_id')

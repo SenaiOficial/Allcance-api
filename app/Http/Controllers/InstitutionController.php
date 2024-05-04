@@ -8,7 +8,9 @@ class InstitutionController extends Controller
 {
   public function get()
   {
-    $request = UserAdmin::select('institution_name', 'cnpj')->get();
+    $request = UserAdmin::select(
+      'institution_name',
+      'cnpj')->get();
 
     $name = $request->pluck('institution_name');
     $cnpj = $request->pluck('cnpj');
@@ -22,9 +24,10 @@ class InstitutionController extends Controller
 
   public function getInstitutions($param)
   {
-    $request = UserAdmin::where('institution_name', '=', $param)
-    ->orWhere('cnpj', '=', $param)
-    ->first();
+    $request = UserAdmin::query()
+            ->where('institution_name', '=', $param)
+            ->orWhere('cnpj', '=', $param)
+            ->first();
 
     return response()->json([
       'success' => true,

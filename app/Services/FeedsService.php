@@ -93,7 +93,7 @@ class FeedsService
     $this->unauthorized($user);
 
     try {
-      $data = $request->validate($request->only([
+      $data = $request->validate([
         'is_event',
         'event_date',
         'event_time',
@@ -101,7 +101,7 @@ class FeedsService
         'title',
         'description',
         'image',
-      ]));
+      ]);
 
       $feedQuery = Feeds::where('id', $id);
 
