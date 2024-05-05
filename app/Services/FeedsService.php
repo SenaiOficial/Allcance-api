@@ -54,7 +54,9 @@ class FeedsService
   public function store($request)
   {
     $user = $this->user;
+
     $this->unauthorized($user);
+
     try {
       $request->validated();
       $image = null;
@@ -112,9 +114,15 @@ class FeedsService
       $feed = $feedQuery->firstOrFail();
 
       $feed->update($data);
-      return response()->json(['message' => 'Dados atualizados com sucesso!'], 200);
+      return response()->json([
+        'success' => true,
+        'message' => 'Post atualizados com sucesso!'
+      ], 200);
     } catch (ValidationException $e) {
-      return response()->json(['error' => $e->errors()], 422);
+      return response()->json([
+        'success' => false,
+        'error' => $e->errors()
+      ], 422);
     }
   }
 
@@ -162,20 +170,19 @@ class FeedsService
     return response()->json($institutions, 200);
   }
 
+  public function getPostByInstitution($institution)
+  {
+    return Feeds::all()->where('institution_name', '=', $institution);
+  }
+
   protected function cleanCacheFeeds()
   {
     Cache::forget($this->cacheFeeds);
     Cache::forget($this->cacheRanking);
   }
 
-  public function getPostByInstitution($institution)
-  {
-    return Feeds::all()->where('institution_name', '=', $institution);
-  }
-
   private function unauthorized($user)
   {
-    if (!$user->is_institution && !$user->is_admin)
-      return abort(401, 'Unauthorized');
+    if (!$user->is_institution && !$user->is_admin) return abort(401, 'Unauthorized');
   }
 }

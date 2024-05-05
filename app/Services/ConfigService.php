@@ -40,8 +40,8 @@ class ConfigService
 
     try {
       $requestData = $request->validate([
-        'text_size_id' => 'required',
-        'color_blindness_id' => 'required'
+        'text_size_id' => 'required|integer',
+        'color_blindness_id' => 'integer'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
@@ -59,7 +59,10 @@ class ConfigService
         ]);
       }
 
-      return response()->json(['message' => 'Configuração salva!']);
+      return response()->json([
+        'success' => true,
+        'message' => 'Configuração salva!
+        ']);
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
@@ -86,12 +89,14 @@ class ConfigService
         ];
 
         return response()->json([
-          'sucess' => true,
+          'success' => true,
           'text' => $textConfig,
           'color' => $colorConfig
         ], 200);
       } else {
-        return response()->json(['sucess' => false, 'message' => 'Configuração não encontrada!']);
+        return response()->json([
+          'success' => false,
+          'message' => 'Configuração não encontrada!']);
       }
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
