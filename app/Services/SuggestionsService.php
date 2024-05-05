@@ -9,16 +9,16 @@ use App\Models\Suggestions;
 
 class SuggestionsService
 {
-  protected $guard;
+  protected $user;
 
   public function __construct()
   {
-    $this->guard = getActiveGuard();
+    $this->user = auth(getActiveGuard())->user();
   }
 
   public function store(Request $request)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
     $type = $user->getTable();
     $user_id = $user->id;
     $postValidate = $this->validateTimePost($type, $user_id);
@@ -45,7 +45,7 @@ class SuggestionsService
 
   public function update(Request $request, $id)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
 
     if ($user->is_admin) {
       $suggestion = Suggestions::find($id);
@@ -61,7 +61,7 @@ class SuggestionsService
 
   public function delete(Request $request, $id)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
 
     if ($user->is_admin) {
       $suggestion = Suggestions::find($id);

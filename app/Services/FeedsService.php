@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Feeds;
 use App\Models\UserAdmin;
 use Carbon\Carbon;
+use Dotenv\Exception\ValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -14,13 +15,13 @@ class FeedsService
 {
   protected $cacheFeeds = 'feeds-cache';
   protected $cacheRanking = 'rank-cache';
-  protected $api_url;
   protected $storage;
+  protected $user;
 
   public function __construct()
   {
-    $this->api_url = env('APP_PRODUCTION_URL');
     $this->storage = env('STORAGE_URL');
+    $this->user = auth('admin')->user();
   }
 
   protected function posts()
@@ -36,7 +37,7 @@ class FeedsService
 
       foreach ($posts as $post) {
         $published = Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i');
-        $image = $this->api_url . $this->storage . $post->image;
+        $image = $this->storage . $post->image;
         $formattedPosts[] = [
           'post' => $post,
           'image' => $image,
@@ -52,49 +53,91 @@ class FeedsService
 
   public function store($request)
   {
-    $user = auth('admin')->user();
+    $user = $this->user;
 
-    if ($user->is_institution || $user->is_admin) {
-      try {
-        $validateData = $request->validated();
-        $image = $request->file('image');
-        $filename = $image->hashName();
-        Storage::disk('public')->put('images', $image);
-        $validateData['admin_user_id'] = $user->id;
-        $validateData['profile_photo'] = $user->profile_photo;
-        $validateData['institution_name'] = $user->institution_name;
-        $validateData['published_at'] = Carbon::now();
-        $validateData['image'] = $filename;
+    $this->unauthorized($user);
 
-        $feed = Feeds::create($validateData);
-        $feed->save();
+    try {
+      $request->validated();
+      $image = null;
 
-        $this->cleanCacheFeeds();
-
-        return response()->json(['message' => 'Post criado com sucesso!'], 200);
-      } catch (\Exception $e) {
-        return response()->json([$e->getMessage()], 400);
+      if ($request->hasFile('image')) {
+        $image = Storage::disk('public')->put('images', $request->file('image'));
       }
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+
+      Feeds::query()
+        ->create([
+          'admin_user_id' => $user->id,
+          'profile_photo' => $user->profile_photo,
+          'institution_name' => $user->institution_name,
+          'is_event' => $request->is_event,
+          'event_date' => $request->event_date,
+          'event_time' => $request->event_time,
+          'event_location' => $request->event_location,
+          'title' => $request->title,
+          'description' => $request->description,
+          'image' => 'storage/' . $image,
+          'published_at' => Carbon::now()
+        ]);
+
+      $this->cleanCacheFeeds();
+
+      return response()->json(['message' => 'Post criado com sucesso!'], 200);
+    } catch (\Exception $e) {
+      return response()->json([$e->getMessage()], 400);
+    }
+  }
+
+  public function update($request, $id)
+  {
+    $user = $this->user;
+
+    $this->unauthorized($user);
+
+    try {
+      $data = $request->validate([
+        'is_event',
+        'event_date',
+        'event_time',
+        'event_location',
+        'title',
+        'description',
+        'image',
+      ]);
+
+      $feedQuery = Feeds::where('id', $id);
+
+      if (!$user->is_admin) {
+        $feedQuery->where('admin_user_id', $user->id);
+      }
+
+      $feed = $feedQuery->firstOrFail();
+
+      $feed->update($data);
+      return response()->json([
+        'success' => true,
+        'message' => 'Post atualizados com sucesso!'
+      ], 200);
+    } catch (ValidationException $e) {
+      return response()->json([
+        'success' => false,
+        'error' => $e->errors()
+      ], 422);
     }
   }
 
   public function delete(Request $request, $id)
   {
-    $user = auth('admin')->user();
+    $user = $this->user;
 
-    if ($user->is_institution || $user->is_admin) {
-      $post = Feeds::find($id);
+    $this->unauthorized($user);
 
-      $post->delete();
+    $post = Feeds::find($id);
+    $post->delete();
 
-      $this->cleanCacheFeeds();
+    $this->cleanCacheFeeds();
 
-      return response()->json(['message' => 'Post apagado com sucesso!'], 200);
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
-    }
+    return response()->json(['message' => 'Post apagado com sucesso!'], 200);
   }
 
   public function getHighlightsInstitutions()
@@ -127,9 +170,19 @@ class FeedsService
     return response()->json($institutions, 200);
   }
 
+  public function getPostByInstitution($institution)
+  {
+    return Feeds::all()->where('institution_name', '=', $institution);
+  }
+
   protected function cleanCacheFeeds()
   {
     Cache::forget($this->cacheFeeds);
     Cache::forget($this->cacheRanking);
+  }
+
+  private function unauthorized($user)
+  {
+    if (!$user->is_institution && !$user->is_admin) return abort(401, 'Unauthorized');
   }
 }

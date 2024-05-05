@@ -25,6 +25,11 @@ class FeedsController extends Controller
     return $this->feedsService->store($request);
   }
 
+  public function update(FeedsRequest $request, $id)
+  {
+    return $this->feedsService->update($request, $id);
+  }
+
   public function delete(Request $request, $id)
   {
     return $this->feedsService->delete($request, $id);
@@ -33,5 +38,10 @@ class FeedsController extends Controller
   public function getRanking()
   {
     return $this->feedsService->getHighlightsInstitutions();
+  }
+
+  public function getPostByInstitution($institution)
+  {
+    return $this->feedsService->getPostByInstitution($institution);
   }
 }

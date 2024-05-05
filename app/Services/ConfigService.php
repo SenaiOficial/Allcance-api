@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class ConfigService
 {
-  protected $guard;
+  protected $user;
 
   public function __construct()
   {
-    $this->guard = getActiveGuard();
+    $this->user = auth(getActiveGuard())->user();
   }
 
   private function getDatas($model)
@@ -34,14 +34,14 @@ class ConfigService
 
   public function createConfig(Request $request)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
     $user_id = $user->id;
     $type = $user->getTable();
 
     try {
       $requestData = $request->validate([
-        'text_size_id' => 'required',
-        'color_blindness_id' => 'required'
+        'text_size_id' => 'required|integer',
+        'color_blindness_id' => 'integer'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
@@ -59,7 +59,10 @@ class ConfigService
         ]);
       }
 
-      return response()->json(['message' => 'Configuração salva!']);
+      return response()->json([
+        'success' => true,
+        'message' => 'Configuração salva!
+        ']);
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }
@@ -67,7 +70,7 @@ class ConfigService
 
   public function getConfig(Request $request)
   {
-    $user = auth($this->guard)->user();
+    $user = $this->user;
 
     try {
       $config = Configuration::select('text_size_id', 'color_blindness_id')
@@ -86,12 +89,14 @@ class ConfigService
         ];
 
         return response()->json([
-          'sucess' => true,
+          'success' => true,
           'text' => $textConfig,
           'color' => $colorConfig
         ], 200);
       } else {
-        return response()->json(['sucess' => false, 'message' => 'Configuração não encontrada!']);
+        return response()->json([
+          'success' => false,
+          'message' => 'Configuração não encontrada!']);
       }
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
