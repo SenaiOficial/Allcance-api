@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Jobs\InstitutionTokenJob;
+use App\Models\InstitutionalToken;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +18,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('tokens:cleanup')->everyFiveMinutes();
+
+        $schedule->call(function () {
+            $token = InstitutionalToken::orderBy('created_at', 'desc')->first();
+            if ($token && $token->created_at->addMinutes(1)->isPast()) {
+                InstitutionTokenJob::dispatch($token->institutional_token);
+            }
+        })->everyMinute();
     }
 
     /**
