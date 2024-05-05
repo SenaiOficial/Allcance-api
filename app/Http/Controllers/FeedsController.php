@@ -39,4 +39,9 @@ class FeedsController extends Controller
   {
     return $this->feedsService->getHighlightsInstitutions();
   }
+
+  public function getPostByInstitution($institution)
+  {
+    return $this->feedsService->getPostByInstitution($institution);
+  }
 }

@@ -74,6 +74,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
             Route::put('/update-post/{id}', [FeedsController::class, 'update']);
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
+            Route::get('/my-posts/{institution}', [FeedsController::class, 'getPostByInstitution']);
         });
     });
 
