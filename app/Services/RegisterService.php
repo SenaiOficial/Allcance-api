@@ -19,7 +19,6 @@ class RegisterService
       $validatedData = $request->validated();
       $validatedData['password'] = Hash::make($validatedData['password']);
 
-      
       if ($request->has('pass_code')) {
         $this->validateAdminUser($validatedData);
 
@@ -41,7 +40,7 @@ class RegisterService
         'message' => 'Sessão iniciada',
         'refresh_token' => $token,
         'type' => 'bearer'
-    ]);
+      ]);
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 400);
     }

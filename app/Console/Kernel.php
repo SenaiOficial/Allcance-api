@@ -2,8 +2,6 @@
 
 namespace App\Console;
 
-use App\Jobs\InstitutionTokenJob;
-use App\Models\InstitutionalToken;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
