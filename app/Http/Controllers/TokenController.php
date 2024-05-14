@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\InstitutionTokenJob;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\InstitutionalToken;
@@ -10,32 +11,15 @@ class TokenController extends Controller
 {
     public function generateToken(Request $request)
     {
-        $token = Str::random(5);
+        $token = makeRandomToken();
 
-        $existingToken = InstitutionalToken::first();
+        InstitutionalToken::create(['institutional_token' => $token]);
 
-        if ($existingToken) {
-            $existingToken->update(['institutional_token' => $token]);
-        } else {
-            InstitutionalToken::create(['institutional_token' => $token]);
-        }
+        InstitutionTokenJob::dispatch($token)->delay(now()->addMinutes(5));
 
-        return response()->json(['token:' => $token], 200);
-    }
-
-    public function validateToken(Request $request)
-    {
-        try {
-            $providedToken = $request->input('pass_code');
-            $storedToken = InstitutionalToken::first()->institutional_token;
-
-            if ($providedToken !== $storedToken) {
-                return response()->json(['error' => 'Token inválido'], 400);
-            }
-
-            return response()->json(['message' => 'Token válido'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Erro ao validar o token'], 500);
-        }
+        return response()->json([
+            'message' => 'O token é válido por 5 minutos',
+            'token' => $token
+        ], 200);
     }
 }

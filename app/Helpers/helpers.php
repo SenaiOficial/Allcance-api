@@ -21,3 +21,14 @@ if (!function_exists('getActiveGuard')) {
         return null;
     }
 }
+
+if (!function_exists('makeRandomToken')) {
+    function makeRandomToken()
+    {
+        $token = Str::random(5);
+
+        $token = hash('sha256', $token);
+
+        return $token;
+    }
+}

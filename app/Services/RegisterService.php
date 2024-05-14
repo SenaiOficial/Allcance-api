@@ -4,15 +4,12 @@ namespace App\Services;
 
 use App\Models\InstitutionalToken;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Models\UserAdmin;
 use App\Models\UserPcd;
 use App\Models\UserStandar;
 use App\Models\UserDeficiency;
-use Tymon\JWTAuth\Facades\JWTAuth;
 
 class RegisterService
 {
@@ -24,6 +21,10 @@ class RegisterService
 
       if ($request->has('pass_code')) {
         $this->validateAdminUser($validatedData);
+
+        if ($request->hasFile('profile_photo')) {
+          $validatedData['profile_photo'] = Storage::disk('public')->put('images', $request->file('profile_photo'));
+        }
       }
 
       $user = $model::create($validatedData);
@@ -39,7 +40,7 @@ class RegisterService
         'message' => 'Sessão iniciada',
         'refresh_token' => $token,
         'type' => 'bearer'
-    ]);
+      ]);
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 400);
     }
@@ -91,10 +92,8 @@ class RegisterService
   private function validateAdminUser($validatedData)
   {
     $providedToken = $validatedData['pass_code'];
-    $storedToken = InstitutionalToken::first()->institutional_token;
+    $storedToken = InstitutionalToken::where('institutional_token', $providedToken);
 
-    if ($providedToken !== $storedToken) {
-      return response()->json(['error' => 'Token inválido'], 400);
-    }
+    if ($providedToken !== $storedToken) return response()->json(['error' => 'Token inválido'], 400);
   }
 }
