@@ -15,7 +15,7 @@ class TokenController extends Controller
 
         InstitutionalToken::create(['institutional_token' => $token]);
 
-        // InstitutionTokenJob::dispatch($token)->delay(now()->addMinutes(5));
+        InstitutionTokenJob::dispatch($token)->delay(now()->addMinutes(5));
 
         return response()->json([
             'message' => 'O token é válido por 5 minutos',

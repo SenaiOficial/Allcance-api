@@ -41,7 +41,7 @@ class ConfigService
     try {
       $requestData = $request->validate([
         'text_size_id' => 'required|integer',
-        'color_blindness_id' => 'integer'
+        'color_blindness_id' => 'nullable|integer'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
@@ -61,10 +61,14 @@ class ConfigService
 
       return response()->json([
         'success' => true,
-        'message' => 'Configuração salva!
-        ']);
+        'message' => 'Configuração salva!'
+      ], 200);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 400);
+      return response()->json([
+        'success' => false,
+        'message' => 'Formato inválido!',
+        'error' => $e->getMessage()
+      ], 400);
     }
   }
 

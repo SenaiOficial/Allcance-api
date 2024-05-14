@@ -18,13 +18,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('tokens:cleanup')->everyFiveMinutes();
-
-        $schedule->call(function () {
-            $token = InstitutionalToken::orderBy('created_at', 'desc')->first();
-            if ($token && $token->created_at->addMinutes(1)->isPast()) {
-                InstitutionTokenJob::dispatch($token->institutional_token);
-            }
-        })->everyMinute();
     }
 
     /**
