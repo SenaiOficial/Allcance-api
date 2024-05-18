@@ -54,8 +54,8 @@ class ConfigurationService
 
     try {
       $requestData = $request->validate([
-        'text_size' => 'required|string',
-        'color_blindness' => 'nullable|string'
+        'text_size' => 'required|string|in:Muito pequeno,Pequeno,Normal,Grande,Muito grande',
+        'color_blindness' => 'nullable|string|in:Deuteranopia,Protanopia,Tritanopia'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
