@@ -5,9 +5,10 @@ namespace App\Services;
 use App\Models\ColorBlindness;
 use App\Models\Configuration;
 use App\Models\TextSize;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class ConfigService
+class ConfigurationService
 {
   protected $user;
 
@@ -16,20 +17,35 @@ class ConfigService
     $this->user = auth(getActiveGuard())->user();
   }
 
-  private function getDatas($model)
+  private function getSizes(): array
   {
-    $data = $model::all(['id', 'description']);
-
-    return response()->json($data);
+    return [
+      'Muito pequeno',
+      'Pequeno',
+      'Normal',
+      'Grande',
+      'Muito grande'
+    ];
   }
-  public function getSizes()
+
+  private function getColorBlindness(): array
   {
-    return $this->getDatas(new TextSize);
+    return [
+      'Deuteranopia',
+      'Protanopia',
+      'Tritanopia'
+    ];
   }
 
-  public function getColorBlindness()
+  public function getOptions(): JsonResponse
   {
-    return $this->getDatas(new ColorBlindness);
+    $text = $this->getSizes();
+    $color = $this->getColorBlindness();
+
+    return response()->json([
+      'text-sizes' => $text,
+      'color-types' => $color
+    ]);
   }
 
   public function createConfig(Request $request)
@@ -40,8 +56,8 @@ class ConfigService
 
     try {
       $requestData = $request->validate([
-        'text_size_id' => 'required|integer',
-        'color_blindness_id' => 'nullable|integer'
+        'text_size' => 'required|string',
+        'color_blindness' => 'nullable|string'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
@@ -54,8 +70,8 @@ class ConfigService
         Configuration::create([
           'user_id' => $user_id,
           'type' => $type,
-          'text_size_id' => $requestData['text_size_id'],
-          'color_blindness_id' => $requestData['color_blindness_id']
+          'text_size' => $requestData['text_size'],
+          'color_blindness' => $requestData['color_blindness']
         ]);
       }
 
@@ -77,31 +93,19 @@ class ConfigService
     $user = $this->user;
 
     try {
-      $config = Configuration::select('text_size_id', 'color_blindness_id')
-        ->where('user_id', '=', $user->id)
-        ->where('type', '=', $user->getTable())
-        ->first();
+      $config = $user->configs->first();
 
       if ($config) {
-        $textConfig = [
-          'id' => $config->text->id,
-          'value' => $config->text->description
-        ];
-        $colorConfig = [
-          'id' => $config->blindness->id,
-          'value' => $config->blindness->description
+        $configs = [
+          'text_size' => $config->text_size,
+          'color_blindness' => $config->color_blindness
         ];
 
         return response()->json([
           'success' => true,
-          'text' => $textConfig,
-          'color' => $colorConfig
+          'configuration' => $configs,
         ], 200);
-      } else {
-        return response()->json([
-          'success' => false,
-          'message' => 'Configuração não encontrada!']);
-      }
+      } else return;
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 400);
     }

@@ -51,13 +51,13 @@ class UserAdmin extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function resetPasswords()
-    {
-        return $this->hasMany(ResetPassword::class, 'email', 'email');
-    }
-
     public function getGuard()
     {
         return $this->guard;
+    }
+
+    public function configs()
+    {
+        return $this->hasMany(Configuration::class, 'user_id', 'id');
     }
 }

@@ -15,10 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->string('type');
-            $table->unsignedBigInteger('text_size_id');
-            $table->unsignedBigInteger('color_blindness_id');
-            $table->foreign('text_size_id')->references('id')->on('text_size')->onDelete('cascade');
-            $table->foreign('color_blindness_id')->references('id')->on('color_blindness')->onDelete('cascade');
+            $table->string('text_size');
+            $table->string('color_blindness')->nullable();
             $table->timestamps();
         });
     }

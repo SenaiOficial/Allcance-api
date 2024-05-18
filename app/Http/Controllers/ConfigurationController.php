@@ -4,25 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Services\ConfigService;
+use App\Services\ConfigurationService;
 
 class ConfigurationController extends Controller
 {
   protected $configService;
 
-  public function __construct(ConfigService $configService)
+  public function __construct(ConfigurationService $configService)
   {
     $this->configService = $configService;
   }
 
-  public function getSizes()
+  public function getOptions()
   {
-    return $this->configService->getSizes();
-  }
-
-  public function getColorBlindness()
-  {
-    return $this->configService->getColorBlindness();
+    return $this->configService->getOptions();
   }
 
   public function createConfig(Request $request)

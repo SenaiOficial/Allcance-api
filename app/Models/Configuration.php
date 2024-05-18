@@ -13,17 +13,8 @@ class Configuration extends Model
     protected $fillable = [
         'user_id',
         'type',
-        'text_size_id',
-        'color_blindness_id'
+        'text_size',
+        'color_blindness'
     ];
-
-    public function text()
-    {
-        return $this->belongsTo(TextSize::class, 'text_size_id', 'id');
-    }
-
-    public function blindness()
-    {
-        return $this->belongsTo(ColorBlindness::class, 'color_blindness_id', 'id');
-    }
+    protected $hidden = ['type'];
 }
