@@ -41,8 +41,8 @@ class ConfigurationService
     $color = $this->getColorBlindness();
 
     return response()->json([
-      'text-sizes' => $text,
-      'color-types' => $color
+      'text_sizes' => $text,
+      'color_types' => $color
     ]);
   }
 
