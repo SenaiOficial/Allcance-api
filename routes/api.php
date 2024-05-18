@@ -52,9 +52,8 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('configuration')->group(function () {
-        Route::get('/get-text-sizes', [ConfigurationController::class, 'getSizes']);
-        Route::get('/get-color-blindness', [ConfigurationController::class, 'getColorBlindness']);
-        Route::get('/get', [ConfigurationController::class, 'getConfig']);
+        Route::get('/get-config-options', [ConfigurationController::class, 'getOptions']);
+        Route::get('/get-user', [ConfigurationController::class, 'getConfig']);
         Route::post('/create', [ConfigurationController::class, 'createConfig']);
     });
 

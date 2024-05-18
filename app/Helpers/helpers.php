@@ -32,3 +32,14 @@ if (!function_exists('makeRandomToken')) {
         return $token;
     }
 }
+
+if (!function_exists('getUserType')) {
+    function getUserType($user)
+    {
+        $type = 'default';
+
+        if ($user->getGuard() === 'admin') $type = $user->getGuard();
+
+        return $type;
+    }
+}

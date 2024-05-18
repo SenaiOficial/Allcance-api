@@ -77,11 +77,6 @@ class UserPcd extends Authenticatable implements JWTSubject
         return $this->guard;
     }
 
-    public function resetPasswords()
-    {
-        return $this->hasMany(ResetPassword::class, 'email', 'email');
-    }
-
     public function deficiencyTypes()
     {
         return $this->belongsTo(DeficiencyTypes::class, 'pcd_type');
@@ -90,6 +85,10 @@ class UserPcd extends Authenticatable implements JWTSubject
     public function pcdDeficiencies()
     {
         return $this->hasMany(UserDeficiency::class, 'pcd_user_id', 'id');
+    }
 
+    public function configs()
+    {
+        return $this->hasMany(Configuration::class, 'user_id', 'id');
     }
 }

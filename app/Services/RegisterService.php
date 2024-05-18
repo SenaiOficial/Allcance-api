@@ -20,7 +20,7 @@ class RegisterService
       $validatedData['password'] = Hash::make($validatedData['password']);
 
       if ($request->has('pass_code')) {
-        $this->validateAdminUser($validatedData);
+        if ($this->validateAdminUser($validatedData)) return response()->json('Token Inválido', 401);
 
         if ($request->hasFile('profile_photo')) {
           $validatedData['profile_photo'] = Storage::disk('public')->put('images', $request->file('profile_photo'));
@@ -33,13 +33,17 @@ class RegisterService
         $this->sendDeficiency($validatedData, $user);
       }
 
+      if ($request->has('pass_code')) {
+        $this->deleteAdminToken($validatedData['pass_code']);
+      }
+
       $token = auth()->guard($user->getGuard())->login($user);
 
       return response()->json([
         'status' => 'success',
         'message' => 'Sessão iniciada',
-        'refresh_token' => $token,
-        'type' => 'bearer'
+        'access_token' => $token,
+        'user' => getUserType($user)
       ]);
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 400);
@@ -92,8 +96,15 @@ class RegisterService
   private function validateAdminUser($validatedData)
   {
     $providedToken = $validatedData['pass_code'];
-    $storedToken = InstitutionalToken::where('institutional_token', $providedToken);
+    $storedToken = InstitutionalToken::where('institutional_token', '=', $providedToken)->first();
 
-    if ($providedToken !== $storedToken) return response()->json(['error' => 'Token inválido'], 400);
+    if (!$storedToken || $providedToken !== $storedToken->institutional_token) return true;
+
+    return false;
+  }
+
+  private function deleteAdminToken($providedToken)
+  {
+    InstitutionalToken::where('institutional_token', '=', $providedToken)->delete();
   }
 }

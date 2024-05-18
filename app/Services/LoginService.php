@@ -13,15 +13,23 @@ class LoginService
 
   public function login($request)
   {
-    $credentials = $request->getCredentials();
-
     foreach (guards() as $guard) {
-      if ($token = auth($guard)->attempt($credentials)) {
+      if ($token = auth($guard)->attempt($request->getCredentials())) {
+        $user = auth($guard)->user();
+        $config = $user->configs->first();
+
+        if ($config)
+          $configs = [
+            'text_size' => $config->text_size,
+            'color_blindness' => $config->color_blindness
+          ];
+
         return response()->json([
           'success' => true,
           'message' => 'Sessão iniciada',
           'access_token' => $token,
-          'type' => 'bearer'
+          'user' => getUserType($user),
+          'config' => $configs ?? null
         ]);
       }
     }
