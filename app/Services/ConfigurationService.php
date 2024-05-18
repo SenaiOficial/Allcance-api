@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\ColorBlindness;
 use App\Models\Configuration;
-use App\Models\TextSize;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

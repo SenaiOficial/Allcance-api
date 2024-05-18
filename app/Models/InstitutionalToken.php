@@ -10,6 +10,5 @@ class InstitutionalToken extends Model
     use HasFactory;
 
     protected $table = 'generate_institutional_token';
-
     protected $fillable = ['institutional_token'];
 }
