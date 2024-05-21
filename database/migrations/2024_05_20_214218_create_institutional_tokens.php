@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('generate_institutional_token', function (Blueprint $table) {
+        Schema::create('institutional_tokens', function (Blueprint $table) {
             $table->id();
-            $table->string('institutional_token');
+            $table->unsignedBigInteger('user_id');
+            $table->string('token')->unique();
+            $table->timestamp('expires_at');
             $table->timestamps();
+            $table->foreign('user_id')->references('id')->on('admin_user')->onDelete('cascade');
         });
     }
 
@@ -23,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('generate_institutional_token');
+        Schema::dropIfExists('institutinal_tokens');
     }
 };

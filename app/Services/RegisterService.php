@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\InstitutionalToken;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +56,7 @@ class RegisterService
     return $this->store($request, $model);
   }
 
-  private function getCamp($attribute, $param)
+  private function getCamp($attribute, $param): array
   {
     $standarUserExists = UserStandar::where($attribute, $param)->exists();
     $pcdUserExists = UserPcd::where($attribute, $param)->exists();
@@ -83,7 +84,7 @@ class RegisterService
     return $this->checkExists($request);
   }
 
-  private function sendDeficiency($validatedData, $user)
+  private function sendDeficiency($validatedData, $user): void
   {
     foreach ($validatedData['pcd'] as $deficiencyId) {
       UserDeficiency::create([
@@ -93,18 +94,21 @@ class RegisterService
     }
   }
 
-  private function validateAdminUser($validatedData)
+  private function validateAdminUser($validatedData): bool
   {
     $providedToken = $validatedData['pass_code'];
-    $storedToken = InstitutionalToken::where('institutional_token', '=', $providedToken)->first();
+    $storedToken = InstitutionalToken::query()
+        ->where('token', $providedToken)
+        ->where('expires_at', '>=', Carbon::now())
+        ->first();
 
-    if (!$storedToken || $providedToken !== $storedToken->institutional_token) return true;
+    if (!$storedToken || $providedToken !== $storedToken->token) return true;
 
     return false;
   }
 
-  private function deleteAdminToken($providedToken)
+  private function deleteAdminToken($providedToken): void
   {
-    InstitutionalToken::where('institutional_token', '=', $providedToken)->delete();
+    InstitutionalToken::where('token', '=', $providedToken)->delete();
   }
 }
