@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserAdmin;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,7 +57,10 @@ class InstitutionController extends Controller
       ]);
 
       if (!Hash::check($request->password, $user->password)) {
-        return response('Senha incorreta!', 401);
+        return response()->json([
+          'success' => false,
+          'Senha incorreta!'
+        ], 401);
       }
 
       $updated = UserAdmin::where('id', $request->id)

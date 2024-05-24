@@ -38,7 +38,9 @@ if (!function_exists('getUserType')) {
     {
         $type = 'default';
 
-        if ($user->getGuard() === 'admin') $type = $user->getGuard();
+        if ($user->getGuard() === 'admin') {
+            $type = $user->is_admin ? $user->getGuard() : 'institution';
+        }
 
         return $type;
     }
