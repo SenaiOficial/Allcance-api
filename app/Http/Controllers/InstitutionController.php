@@ -55,14 +55,16 @@ class InstitutionController extends Controller
         'password' => 'required'
       ]);
 
-
       if (!Hash::check($request->password, $user->password)) {
         return response('Senha incorreta!', 401);
       }
 
-      $updated = UserAdmin::where('id', $request->id)->update([
-        'is_blocked' => DB::raw('NOT is_blocked')
-      ]);
+      $updated = UserAdmin::where('id', $request->id)
+        ->where('is_institution', true)
+        ->where('is_admin', false)
+        ->update([
+          'is_blocked' => DB::raw('NOT is_blocked')
+        ]);
 
       if ($updated) {
         $institution = UserAdmin::find($request->id);
