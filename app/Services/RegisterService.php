@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\InstitutionalToken;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -11,6 +10,7 @@ use App\Models\UserAdmin;
 use App\Models\UserPcd;
 use App\Models\UserStandar;
 use App\Models\UserDeficiency;
+use App\Models\InstitutionalToken;
 
 class RegisterService
 {

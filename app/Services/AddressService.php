@@ -33,11 +33,11 @@ class AddressService
   private function rules($data)
   {
     $rules = [
-      'cep' => ['required', 'string', 'size:8'],
-      'neighborhood' => ['required', 'string', 'max:100'],
-      'street' => ['required', 'string', 'max:255'],
-      'street_number' => ['required', 'string', 'max:10'],
-      'street_complement' => ['nullable', 'string', 'max:255'],
+      'cep' => 'required|string|size:8',
+      'neighborhood' => 'required|string|max:100',
+      'street' => 'required|string|max:255',
+      'street_number' => 'required|string|max:10',
+      'street_complement' => 'nullable|string|max:255'
     ];
 
     $validator = Validator::make($data, $rules);
