@@ -36,7 +36,7 @@ class LoginService
 
     return response()->json([
       'success' => false,
-      'error' => 'Email ou senha inválidos!'
+      'error' => 'Email ou senha incorretos!'
     ], 401);
   }
 

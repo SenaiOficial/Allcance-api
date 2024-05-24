@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('institution')->group(function () {
             Route::get('/get-all', [InstitutionController::class, 'get']);
             Route::get('/get/{param}', [InstitutionController::class, 'getInstitutions']);
+            Route::post('/block-user', [InstitutionController::class, 'blockInstitution']);
         });
     });
 });

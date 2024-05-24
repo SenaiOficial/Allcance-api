@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('admin', function (Blueprint $table) {
-            $table->boolean('is_blocked')->after('is_institution');
+        Schema::table('admin_user', function (Blueprint $table) {
+            $table->boolean('is_blocked')->default(false)->after('is_institution');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('admin', function (Blueprint $table) {
-            //
+        Schema::table('admin_user', function (Blueprint $table) {
+            $table->dropColumn('is_blocked')->default(false)->after('is_institution');
         });
     }
 };
