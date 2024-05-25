@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\UserAdmin;
 use DB;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -59,7 +58,7 @@ class InstitutionController extends Controller
       if (!Hash::check($request->password, $user->password)) {
         return response()->json([
           'success' => false,
-          'Senha incorreta!'
+          'message' => 'Senha incorreta!'
         ], 401);
       }
 
@@ -72,12 +71,11 @@ class InstitutionController extends Controller
 
       if ($updated) {
         $institution = UserAdmin::find($request->id);
-        $message = 'Instituição bloqueada!';
+        $message = 'Instituição ' . $institution->institution_name . ' bloqueada!';
 
-        if (!$institution->is_blocked) $message = 'Instituição desbloqueada!';
-      } else {
-        return response('Instituição não encontrada', 404);
-      }
+        if (!$institution->is_blocked)
+          $message = 'Instituição ' . $institution->institution_name . ' desbloqueada!';
+      } else return response('Instituição não encontrada', 404);
 
       return response()->json([
         'success' => true,

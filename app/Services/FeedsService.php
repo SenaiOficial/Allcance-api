@@ -36,12 +36,10 @@ class FeedsService
       $formattedPosts = [];
 
       foreach ($posts as $post) {
-        $published = Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i');
-        $image = $this->storage . $post->image;
         $formattedPosts[] = [
           'post' => $post,
-          'image' => $image,
-          'time' => 'Publicado ' . $published
+          'image' => $this->storage . $post->image,
+          'time' => 'Publicado ' . Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i')
         ];
       }
 
@@ -82,9 +80,15 @@ class FeedsService
 
       $this->cleanCacheFeeds();
 
-      return response()->json(['message' => 'Post criado com sucesso!'], 200);
+      return response()->json([
+        'success' => true,
+        'message' => 'Post criado com sucesso!'
+      ], 200);
     } catch (\Exception $e) {
-      return response()->json([$e->getMessage()], 400);
+      return response()->json([
+        'success' => false,
+        'error' => $e->getMessage()
+      ], 500);
     }
   }
 

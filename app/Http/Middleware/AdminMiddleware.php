@@ -9,7 +9,9 @@ class AdminMiddleware
 {
   public function handle(Request $request, Closure $next)
   {
-    if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->is_institution) {
+    $admin = auth()->guard('admin');
+
+    if ($admin->check() && $admin->user()->is_institution && !$admin->user()->is_blocked) {
       return $next($request);
     }
 
