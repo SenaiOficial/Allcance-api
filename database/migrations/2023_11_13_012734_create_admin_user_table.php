@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('institution_name');
             $table->string('telephone', 10);
             $table->string('cnpj', 14)->unique();
-            $table->string('pass_code')->unique();
             $table->string('email')->unique();
             $table->string('password');
             $table->boolean('is_institution')->default(true);

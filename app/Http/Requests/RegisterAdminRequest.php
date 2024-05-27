@@ -27,7 +27,7 @@ class RegisterAdminRequest extends FormRequest
             'telephone' => ['required', 'string', 'max:10'],
             'cnpj' => ['required', 'unique:admin_user', 'size:14'],
             'pass_code' => ['required'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:standar_user', 'unique:admin_user'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:pcd_users', 'unique:standar_user', 'unique:admin_user'],
             'password' => [
                 'required',
                 'string',

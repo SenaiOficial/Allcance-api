@@ -20,7 +20,6 @@ class UserAdmin extends Authenticatable implements JWTSubject
         'profile_photo',
         'telephone',
         'cnpj',
-        'pass_code',
         'email',
         'password',
         'is_institution',

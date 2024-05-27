@@ -33,7 +33,7 @@ class RegisterStandarUser extends FormRequest
             'gender' => ['required', 'string', 'max:255'],
             'state' => ['required'],
             'city' => ['required'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users', 'unique:standar_user', 'unique:admin_user'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:pcd_users', 'unique:standar_user', 'unique:admin_user'],
             'password' => [
                 'required',
                 'string',
