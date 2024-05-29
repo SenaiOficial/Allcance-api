@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
-class LoginService
+use App\Services\User\BaseService;
+
+class LoginService extends BaseService
 {
   protected $guard;
 
@@ -17,7 +19,6 @@ class LoginService
       if ($token = auth($guard)->attempt($request->getCredentials())) {
         $user = auth($guard)->user();
         $config = $user->configs->first();
-        $type = getUserType($user);
 
         if ($config) {
           $configs = [
@@ -25,25 +26,12 @@ class LoginService
             'color_blindness' => $config->color_blindness
           ];
         }
-
-        if (getUserType($user) !== 'default') {
-          $info = [
-            'name' => $user->institution_name,
-            'cnpj' => $user->cnpj,
-            'type' => $type
-          ];
-        } else {
-          $info = [
-            'cpf' => $user->cpf,
-            'type' => $type
-          ];
-        }
-
+        
         return response()->json([
           'success' => true,
           'message' => 'Sessão iniciada',
           'access_token' => $token,
-          'user' => $info,
+          'user' => $this->getUserInfos($user),
           'config' => $configs ?? null
         ]);
       }

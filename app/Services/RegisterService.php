@@ -11,8 +11,9 @@ use App\Models\UserPcd;
 use App\Models\UserStandar;
 use App\Models\UserDeficiency;
 use App\Models\InstitutionalToken;
+use App\Services\User\BaseService;
 
-class RegisterService
+class RegisterService extends BaseService
 {
   private function store($request, $model)
   {
@@ -44,7 +45,7 @@ class RegisterService
         'status' => 'success',
         'message' => 'Sessão iniciada',
         'access_token' => $token,
-        'user' => getUserType($user)
+        'user' => $this->getUserInfos($user)
       ]);
     } catch (\Exception $e) {
       return response()->json(['errors' => $e->getMessage()], 400);

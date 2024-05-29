@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Services\User;
+
+class BaseService
+{
+  protected function getUserInfos($user)
+  {
+    $type = $this->getUserType($user);
+
+    if ($type !== 'default') {
+      $info = [
+        'name' => $user->institution_name,
+        'cnpj' => $user->cnpj,
+        'type' => $type
+      ];
+    } else {
+      $info = [
+        'cpf' => $user->cpf,
+        'type' => $type
+      ];
+    }
+
+    return $info;
+  }
+
+  protected function getUserType($user)
+  {
+    $type = 'default';
+
+    if ($user->getGuard() === 'admin') {
+      $type = $user->is_admin ? $user->getGuard() : 'institution';
+    }
+
+    return $type;
+  }
+}
