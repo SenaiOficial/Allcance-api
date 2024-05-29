@@ -17,18 +17,33 @@ class LoginService
       if ($token = auth($guard)->attempt($request->getCredentials())) {
         $user = auth($guard)->user();
         $config = $user->configs->first();
+        $type = getUserType($user);
 
-        if ($config)
+        if ($config) {
           $configs = [
             'text_size' => $config->text_size,
             'color_blindness' => $config->color_blindness
           ];
+        }
+
+        if (getUserType($user) !== 'default') {
+          $info = [
+            'name' => $user->institution_name,
+            'cnpj' => $user->cnpj,
+            'type' => $type
+          ];
+        } else {
+          $info = [
+            'cpf' => $user->cpf,
+            'type' => $type
+          ];
+        }
 
         return response()->json([
           'success' => true,
           'message' => 'Sessão iniciada',
           'access_token' => $token,
-          'user' => getUserType($user),
+          'user' => $info,
           'config' => $configs ?? null
         ]);
       }
