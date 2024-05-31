@@ -36,12 +36,12 @@ class FeedsService
       $formattedPosts = [];
 
       foreach ($posts as $post) {
-        $formattedPosts[] = [
-          'post' => $post,
+        $formattedPosts[] = (object) array_merge($post->toArray(), [
           'image' => $this->storage . $post->image,
-          'time' => 'Publicado ' . Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i')
-        ];
-      }
+          'time' => 'Publicado ' . Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i'),
+          'cnpj' => $post->adminUser->cnpj
+      ]);
+    }
 
       return $formattedPosts;
     });
