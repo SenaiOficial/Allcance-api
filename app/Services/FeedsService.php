@@ -179,7 +179,7 @@ class FeedsService
     return Feeds::all()->where('institution_name', '=', $institution);
   }
 
-  protected function cleanCacheFeeds()
+  protected function cleanCacheFeeds(): void
   {
     Cache::forget($this->cacheFeeds);
     Cache::forget($this->cacheRanking);

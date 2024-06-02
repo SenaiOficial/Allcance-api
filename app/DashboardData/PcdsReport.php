@@ -31,23 +31,23 @@ class PcdsReport extends DashboardService
     $reportData = [];
 
     foreach ($pcdsByNeighborhood as $neighborhood => $pcds) {
-        $totalCount = array_sum($pcds->all());
-        $data = [];
+      $totalCount = array_sum($pcds->all());
+      $data = [];
 
-        foreach ($pcds as $pcd => $count) {
-            $percentage = ($count / $totalCount) * 100;
+      foreach ($pcds as $pcd => $count) {
+        $percentage = ($count / $totalCount) * 100;
 
-            $data[] = [
-                'name' => $pcd,
-                'value' => $count,
-                'percentage' => intval($percentage),
-            ];
-        }
-
-        $reportData[] = [
-            'title' => $neighborhood,
-            'data' => $data,
+        $data[] = [
+          'name' => $pcd,
+          'value' => $count,
+          'percentage' => intval($percentage),
         ];
+      }
+
+      $reportData[] = [
+        'title' => $neighborhood,
+        'data' => $data,
+      ];
     }
 
     return $reportData;
