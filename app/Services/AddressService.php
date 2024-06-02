@@ -14,7 +14,15 @@ class AddressService
       $user = auth('api')->user();
 
       try {
-          $requestData = $request->only(['cep', 'neighborhood', 'street', 'street_number', 'street_complement']);
+          $requestData = $request->only([
+            'state',
+            'city',
+            'cep',
+            'neighborhood', 
+            'street', 
+            'street_number', 
+            'street_complement'
+          ]);
 
           $this->rules($requestData);
 
@@ -33,6 +41,8 @@ class AddressService
   private function rules($data)
   {
     $rules = [
+      'state' => 'required|string|max:100',
+      'city' => 'required|string|max:100',
       'cep' => 'required|string|size:8',
       'neighborhood' => 'required|string|max:100',
       'street' => 'required|string|max:255',

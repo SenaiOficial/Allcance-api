@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('feeds')->group(function () {
         Route::get('/posts', [FeedsController::class, 'get']);
         Route::get('/ranking', [FeedsController::class, 'getRanking']);
+        Route::get('/my-posts/{institution}', [FeedsController::class, 'getPostByInstitution']);
     });
 
     Route::prefix('address')->group(function () {
@@ -73,7 +74,6 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
             Route::put('/update-post/{id}', [FeedsController::class, 'update']);
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
-            Route::get('/my-posts/{institution}', [FeedsController::class, 'getPostByInstitution']);
         });
     });
 
