@@ -15,7 +15,7 @@ class ConfigurationService
     $this->user = auth(getActiveGuard())->user();
   }
 
-  private function getSizes(): array
+  private static function getSizes(): array
   {
     return [
       'Muito pequeno',
@@ -26,7 +26,7 @@ class ConfigurationService
     ];
   }
 
-  private function getColorBlindness(): array
+  private static function getColorBlindness(): array
   {
     return [
       'Deuteranopia',
