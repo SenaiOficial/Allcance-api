@@ -85,6 +85,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/block-user', [InstitutionController::class, 'blockInstitution']);
         });
     });
+
+    Route::prefix('cache')->middleware('admin')->group(function () {
+       Route::get('/feed', [FeedsController::class, 'cleanCache']);
+    });
 });
 
 Route::prefix('password')->group(function () {

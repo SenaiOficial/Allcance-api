@@ -44,4 +44,10 @@ class FeedsController extends Controller
   {
     return $this->feedsService->getPostByInstitution($institution);
   }
+
+    public function cleanCache()
+  {
+    $this->feedsService->cleanCacheFeeds();
+    return response()->json('Cache limpo!', 200);
+  }
 }

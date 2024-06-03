@@ -125,7 +125,7 @@ class FeedsService
     } catch (ValidationException $e) {
       return response()->json([
         'success' => false,
-        'error' => $e->errors()
+        'error' => $e->getMessage()
       ], 422);
     }
   }
@@ -179,7 +179,7 @@ class FeedsService
     return Feeds::all()->where('institution_name', '=', $institution);
   }
 
-  protected function cleanCacheFeeds()
+  public function cleanCacheFeeds()
   {
     Cache::forget($this->cacheFeeds);
     Cache::forget($this->cacheRanking);

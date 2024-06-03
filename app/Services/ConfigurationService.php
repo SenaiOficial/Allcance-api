@@ -82,7 +82,7 @@ class ConfigurationService
         'success' => false,
         'message' => 'Formato inválido!',
         'error' => $e->getMessage()
-      ], 400);
+      ], 500);
     }
   }
 
@@ -105,7 +105,10 @@ class ConfigurationService
         ], 200);
       } else return;
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 400);
+      return response()->json([
+        'success' => false,
+        'error' => $e->getMessage()
+      ], 500);
     }
   }
 }
