@@ -11,11 +11,10 @@ class UserDeficiency extends Model
     protected $fillable = [
         'pcd_user_id',
         'deficiency_id',
+        'deficiency_types_id'
     ];
 
     protected $hidden = [
-        'pcd_user_id',
-        'deficiency_id',
         'created_at',
         'updated_at',
     ];
