@@ -23,7 +23,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('pcd_user_deficiency', function (Blueprint $table) {
-            $table->bigInteger('deficiency_types_id');
+            $table->dropColumn('deficiency_types_id');
         });
     }
 };
