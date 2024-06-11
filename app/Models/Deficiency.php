@@ -13,7 +13,6 @@ class Deficiency extends Model
     protected $labels = ['description'];
     protected $fillable = ['description'];
     protected $hidden = [
-        'id',
         'created_at',
         'updated_at',
     ];

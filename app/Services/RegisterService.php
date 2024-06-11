@@ -91,6 +91,7 @@ class RegisterService extends BaseService
       UserDeficiency::create([
         'pcd_user_id' => $user->id,
         'deficiency_id' => $deficiencyId,
+        'deficiency_types_id' => $validatedData['pcd_type']
       ]);
     }
   }

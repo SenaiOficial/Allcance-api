@@ -12,7 +12,6 @@ class DeficiencyTypes extends Model
     protected $table = 'deficiency_types';
     protected $labels = ['description'];
     protected $hidden = [
-        'id',
         'created_at',
         'updated_at',
     ];

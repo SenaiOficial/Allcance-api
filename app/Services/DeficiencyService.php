@@ -29,7 +29,8 @@ class DeficiencyService
     if ($user->is_admin) {
       try {
         $validatedData = $request->validate([
-          'description' => ['required', 'string', 'max:75']
+          'description' => 'required|string|max:75',
+          'deficiency_types_id' => 'required|integer'
         ]);
 
         $newDeficiency = new Deficiency($validatedData);
