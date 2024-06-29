@@ -18,6 +18,7 @@ class ConfigurationService
   private static function getSizes(): array
   {
     return [
+      'Padrão',
       'Muito pequeno',
       'Pequeno',
       'Normal',
@@ -29,6 +30,7 @@ class ConfigurationService
   private static function getColorBlindness(): array
   {
     return [
+      'Padrão',
       'Deuteranopia',
       'Protanopia',
       'Tritanopia'
@@ -55,21 +57,23 @@ class ConfigurationService
     try {
       $requestData = $request->validate([
         'text_size' => 'required|string|in:Muito pequeno,Pequeno,Normal,Grande,Muito grande',
-        'color_blindness' => 'nullable|string|in:Deuteranopia,Protanopia,Tritanopia'
+        'color_blindness' => 'nullable|string|in:Padrão,Deuteranopia,Protanopia,Tritanopia'
       ]);
 
       $config = Configuration::where('user_id', $user_id)
         ->where('type', $type)
         ->first();
 
+      $colorBlindness = $this->checkBlindnesDefault($requestData['color_blindness']);
+
       if ($config) {
-        $config->update($requestData);
+        $config->update(array_merge($requestData, ['color_blindness' => $colorBlindness]));
       } else {
         Configuration::create([
           'user_id' => $user_id,
           'type' => $type,
           'text_size' => $requestData['text_size'],
-          'color_blindness' => $requestData['color_blindness']
+          'color_blindness' => $colorBlindness
         ]);
       }
 
@@ -110,5 +114,12 @@ class ConfigurationService
         'error' => $e->getMessage()
       ], 500);
     }
+  }
+
+  private function checkBlindnesDefault($res)
+  {
+    if ($res === 'Padrão') return null;
+
+    return $res;
   }
 }
