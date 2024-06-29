@@ -20,8 +20,7 @@ class SuggestionsService
   {
     $user = $this->user;
     $type = $user->getTable();
-    $user_id = $user->id;
-    $postValidate = $this->validateTimePost($type, $user_id);
+    $postValidate = $this->validateTimePost($type, $user->id);
 
     try {
       if ($postValidate) {
@@ -32,7 +31,7 @@ class SuggestionsService
 
       Suggestions::create([
         'content' => $content['content'],
-        'user_id' => $user_id,
+        'user_id' => $user->id,
         'type' => $type,
         'user' => $user->first_name ?? $user->institution_name
       ]);
@@ -93,12 +92,16 @@ class SuggestionsService
         $formattedSuggestions[] = [
           'id' => $suggestion->id,
           'user' => $suggestion->user,
-          'content' => $suggestion->content
+          'content' => $suggestion->content,
+          'published_at' => Carbon::parse($suggestion->created_at)->format('d/m')
         ];
       }
 
-      if ($suggestions->isEmpty()) {
-        return response()->json(['message' => 'Nenhuma sugestão encontrada']);
+      if (!$suggestions) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nenhuma sugestão encontrada'
+        ], 404);
       }
 
       return response()->json(['suggestions' => $formattedSuggestions]);
@@ -107,7 +110,7 @@ class SuggestionsService
     }
   }
 
-  private function validateTimePost($type, $user_id)
+  private function validateTimePost($type, $user_id): bool
   {
     $post = DB::table('suggestions')
       ->where('user_id', '=', $user_id)
@@ -116,5 +119,7 @@ class SuggestionsService
       ->first();
 
     if (isset($post)) return true;
+
+    return false;
   }
 }
