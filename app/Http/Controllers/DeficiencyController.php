@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Deficiency;
+use App\Models\DeficiencyTypes;
 use App\Services\DeficiencyService;
 use Illuminate\Http\Request;
 
@@ -16,12 +18,16 @@ class DeficiencyController extends Controller
 
   public function getTypes()
   {
-    return $this->deficiencyService->sendDeficiencyTypes();
-  }
+    $deficiencyTypes = DeficiencyTypes::all(['id', 'description']);
 
+    return response()->json($deficiencyTypes);
+  }
+  
   public function get()
   {
-    return $this->deficiencyService->sendDeficiency();
+    $deficiency = Deficiency::all(['id', 'description']);
+
+    return response()->json($deficiency);
   }
 
   public function store(Request $request)
@@ -29,9 +35,9 @@ class DeficiencyController extends Controller
     return $this->deficiencyService->store($request);
   }
 
-  public function delete(Request $request, $id)
+  public function delete(Request $request)
   {
-    return $this->deficiencyService->delete($request, $id);
+    return $this->deficiencyService->delete($request);
   }
 
   public function getDeficiencies()

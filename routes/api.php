@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('deficiency')->group(function () {
             Route::post('/create-new-deficiency', [DeficiencyController::class, 'store']);
-            Route::delete('/delete-deficiency/{id}', [DeficiencyController::class, 'delete']);
+            Route::post('/delete-deficiency', [DeficiencyController::class, 'delete']);
         });
 
         Route::prefix('feeds')->group(function () {

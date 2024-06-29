@@ -4,63 +4,125 @@ namespace App\Services;
 
 use App\Models\Deficiency;
 use App\Models\DeficiencyTypes;
+use App\Models\UserPcd;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DeficiencyService
 {
-  public function sendDeficiencyTypes()
+  protected $admin;
+
+  public function __construct()
   {
-    $deficiencyTypes = DeficiencyTypes::all(['id', 'description']);
-
-    return response()->json($deficiencyTypes);
-  }
-
-  public function sendDeficiency()
-  {
-    $deficiency = Deficiency::all(['id', 'description']);
-
-    return response()->json($deficiency);
+    $this->admin = auth('admin')->user();
   }
 
   public function store(Request $request)
   {
-    $user = auth('admin')->user();
-    //super admin
-    if ($user->is_admin) {
-      try {
-        $validatedData = $request->validate([
-          'description' => 'required|string|max:75',
-          'deficiency_types_id' => 'required|integer'
-        ]);
+    $this->checkIsAdmin();
 
-        $newDeficiency = new Deficiency($validatedData);
-        $newDeficiency->save();
+    try {
+      $validatedData = $request->validate([
+        'description' => 'required|string|max:75',
+        'deficiency_types_id' => 'required|integer'
+      ]);
 
-        return response()->json(['message' => 'Novo campo adicionado com sucesso!']);
-      } catch (\Exception $e) {
-        return response()->json($e->getMessage(), 400);
-      }
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+      $newDeficiency = new Deficiency($validatedData);
+      $newDeficiency->save();
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Novo campo adicionado com sucesso!'
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'erro' => $e->getMessage()
+      ], 500);
     }
   }
 
-  public function delete(Request $request, $id)
+  public function update(Request $request, $id)
   {
+    $this->checkIsAdmin();
 
-    $user = auth('admin')->user();
-    //super admin
-    if ($user->is_admin) {
-      try {
-        $newDeficiency = Deficiency::find($id);
-        $newDeficiency->delete();
+    try {
+      $requestData = $request->only(['description']);
 
-        return response()->json(['message' => 'Campo excluído com sucesso!']);
-      } catch (\Exception $e) {
-        return response()->json($e->getMessage(), 400);
-      }
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+      Deficiency::find($id)
+        ->update($requestData);
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Campo atualizado com sucesso!'
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'erro' => $e->getMessage()
+      ], 500);
     }
+  }
+
+  public function delete(Request $request)
+  {
+    $this->checkIsAdmin();
+
+    try {
+      $request->validate([
+        'id' => 'required|integer',
+        'password' => 'required'
+      ]);
+
+      if (checkUserPassword($request->password, $this->admin->password)) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Senha incorreta!'
+        ], 401);
+      }
+
+      $user = DB::table('pcd_users')
+        ->select('id')
+        ->join('pcd_user_deficiency', 'pcd_users.id', '=', 'pcd_user_deficiency.pcd_user_id')
+        ->where('pcd_user_deficiency.deficiency_id', '=', $request->id)
+        ->first();
+
+      $timestamp = DB::table('deficiency')
+        ->select('created_at')
+        ->where('id', $request->id)
+        ->first();
+
+      // dd($timestamp);
+
+      $expires_in = Carbon::parse($timestamp)->addMinutes(5);
+
+      if (isset($user) || $expires_in <= Carbon::now() || !$expires_in) {
+        return response([
+          'success' => false,
+          'message' => 'Não pode mais apagar este campo, contate um administrador'
+        ], 400);
+      }
+
+      // $newDeficiency = Deficiency::find($request->id);
+      // $newDeficiency->delete();
+
+      return response()->json([
+        'success' => true,
+        'message' => 'Campo excluído com sucesso!'
+      ], 200);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'erro' => $e->getMessage()
+      ], 500);
+    }
+  }
+
+  private function checkIsAdmin()
+  {
+    if (!$this->admin->is_admin) return abort(401, 'Unauthorized');
+
+    return null;
   }
 }

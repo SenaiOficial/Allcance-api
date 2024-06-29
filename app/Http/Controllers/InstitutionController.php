@@ -55,7 +55,7 @@ class InstitutionController extends Controller
         'password' => 'required'
       ]);
 
-      if (!Hash::check($request->password, $user->password)) {
+      if (checkUserPassword($request->password, $user->password)) {
         return response()->json([
           'success' => false,
           'message' => 'Senha incorreta!'
