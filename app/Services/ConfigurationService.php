@@ -18,7 +18,6 @@ class ConfigurationService
   private static function getSizes(): array
   {
     return [
-      'Padrão',
       'Muito pequeno',
       'Pequeno',
       'Normal',
