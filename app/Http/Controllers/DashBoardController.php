@@ -19,18 +19,18 @@ class DashBoardController extends Controller
 
   public function getPcdsReport()
   {
-    // try {
+    try {
       $result = $this->pcdsReport->getReport('centro');
 
       return response()->json($result);
-    // } catch (\Throwable $th) {
-    //   Log::error($th);
+    } catch (\Throwable $th) {
+      Log::error($th);
 
-    //   return response()->json([
-    //     'success' => false,
-    //     'errors' => 'Não foi possível completar a solicitação.'
-    //   ], 500);
-    // }
+      return response()->json([
+        'success' => false,
+        'errors' => 'Não foi possível completar a solicitação.'
+      ], 500);
+    }
   }
 
   public static function getLocations()
