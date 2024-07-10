@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 if (!function_exists('guards')) {
     function guards()

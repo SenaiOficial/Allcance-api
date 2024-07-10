@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\UserAdmin;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class InstitutionController extends Controller
 {

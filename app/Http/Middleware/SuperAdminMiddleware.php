@@ -16,7 +16,9 @@ class SuperAdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (auth()->guard('admin')->check() && auth()->guard('admin')->user()->is_admin) {
+        $admin = auth()->guard('admin');
+
+        if ($admin->check() && $admin->user()->is_admin) {
             return $next($request);
         }
 

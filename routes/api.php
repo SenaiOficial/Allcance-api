@@ -30,7 +30,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/logout', [LoginController::class, 'logout']);
 
     Route::prefix('dashboards')->group(function () {
-        Route::get('/generate-dashboard-pcds', [DashBoardController::class, 'getPcdsReport']);
+        Route::get('/generate-dashboard-pcds/{location?}', [DashBoardController::class, 'getPcdsReport']);
         Route::get('/locations', [DashBoardController::class, 'getLocations']);
     });
 
@@ -66,11 +66,6 @@ Route::middleware(['auth'])->group(function () {
             Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
         });
 
-        Route::prefix('deficiency')->group(function () {
-            Route::post('/create-new-deficiency', [DeficiencyController::class, 'store']);
-            Route::post('/delete-deficiency', [DeficiencyController::class, 'delete']);
-        });
-
         Route::prefix('feeds')->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
             Route::put('/update-post/{id}', [FeedsController::class, 'update']);
@@ -80,10 +75,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::middleware(['admin'])->group(function () {
         Route::get('/generate-token', [TokenController::class, 'generateToken']);
+
         Route::prefix('institution')->group(function () {
             Route::get('/get-all', [InstitutionController::class, 'get']);
             Route::get('/get/{param}', [InstitutionController::class, 'getInstitutions']);
             Route::post('/block-user', [InstitutionController::class, 'blockInstitution']);
+        });
+
+        Route::prefix('deficiency')->group(function () {
+            Route::post('/create', [DeficiencyController::class, 'store']);
+            Route::put('/update/{id}', [DeficiencyController::class, 'update']);
+            Route::post('/delete', [DeficiencyController::class, 'delete']);
         });
     });
 

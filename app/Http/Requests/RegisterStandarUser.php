@@ -41,7 +41,6 @@ class RegisterStandarUser extends FormRequest
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/',
             ],
             'confirm_password' => ['required', 'same:password'],
-            // 'guard' => ['required']
         ];
     }
 

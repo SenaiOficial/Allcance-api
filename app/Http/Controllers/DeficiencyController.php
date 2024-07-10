@@ -35,6 +35,11 @@ class DeficiencyController extends Controller
     return $this->deficiencyService->store($request);
   }
 
+  public function update(Request $request, $id)
+  {
+    return $this->deficiencyService->update($request, $id);
+  }
+
   public function delete(Request $request)
   {
     return $this->deficiencyService->delete($request);

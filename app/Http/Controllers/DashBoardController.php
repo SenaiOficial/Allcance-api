@@ -17,10 +17,10 @@ class DashBoardController extends Controller
     $this->pcdsReport = $pcdsReport;
   }
 
-  public function getPcdsReport()
+  public function getPcdsReport(string $location = null)
   {
     try {
-      $result = $this->pcdsReport->getReport('centro');
+      $result = $this->pcdsReport->getReport($location);
 
       return response()->json($result);
     } catch (\Throwable $th) {
