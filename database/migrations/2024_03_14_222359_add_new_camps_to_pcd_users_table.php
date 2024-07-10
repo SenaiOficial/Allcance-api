@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('pcd_users', function (Blueprint $table) {
             $table->boolean('get_transport')->default(false)->after('needed_assistance');
-            $table->string('transport_access')->default(false)->after('get_transport');
+            $table->string('transport_access')->nullable()->default(false)->after('get_transport');
         });
     }
 

@@ -29,6 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-deficiencies', [DeficiencyController::class, 'getDeficiencies']);
     Route::get('/logout', [LoginController::class, 'logout']);
 
+    Route::prefix('institution')->group(function () {
+        Route::get('/get/{param}', [InstitutionController::class, 'getInstitutions']);
+    });
+
     Route::prefix('dashboards')->group(function () {
         Route::get('/generate-dashboard-pcds/{location?}', [DashBoardController::class, 'getPcdsReport']);
         Route::get('/locations', [DashBoardController::class, 'getLocations']);
@@ -72,7 +76,6 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('institution')->group(function () {
             Route::get('/get-all', [InstitutionController::class, 'get']);
-            Route::get('/get/{param}', [InstitutionController::class, 'getInstitutions']);
             Route::post('/block-user', [InstitutionController::class, 'blockInstitution']);
         });
 
