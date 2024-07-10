@@ -60,12 +60,6 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::middleware(['institution'])->group(function () {
-        Route::prefix('suggestions')->group(function () {
-            Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
-            Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
-            Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
-        });
-
         Route::prefix('feeds')->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
             Route::put('/update-post/{id}', [FeedsController::class, 'update']);
@@ -86,6 +80,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/create', [DeficiencyController::class, 'store']);
             Route::put('/update/{id}', [DeficiencyController::class, 'update']);
             Route::post('/delete', [DeficiencyController::class, 'delete']);
+        });
+
+        Route::prefix('suggestions')->group(function () {
+            Route::get('/', [SuggestionsController::class, 'showSuggestionsReq']);
+            Route::put('/approve/{id}', [SuggestionsController::class, 'update']);
+            Route::delete('/delete/{id}', [SuggestionsController::class, 'delete']);
         });
     });
 
