@@ -34,7 +34,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::prefix('dashboards')->group(function () {
-        Route::get('/generate-dashboard-pcds/{location?}', [DashBoardController::class, 'getPcdsReport']);
+        Route::get('/generate/{location?}', [DashBoardController::class, 'getPcdsReport']);
         Route::get('/locations', [DashBoardController::class, 'getLocations']);
     });
 
