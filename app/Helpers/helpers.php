@@ -1,4 +1,6 @@
 <?php
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 if (!function_exists('guards')) {
     function guards()
@@ -30,5 +32,14 @@ if (!function_exists('makeRandomToken')) {
         $token = hash('sha256', $token);
 
         return $token;
+    }
+}
+
+if (!function_exists('checkUserPassword')) {
+    function checkUserPassword(string $targetPassword, string $userPassword): bool
+    {
+        if (!Hash::check($targetPassword, $userPassword)) return true;
+        
+        return false;
     }
 }

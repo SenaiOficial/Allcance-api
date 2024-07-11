@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\UserAdmin;
 use DB;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class InstitutionController extends Controller
 {
@@ -55,7 +54,7 @@ class InstitutionController extends Controller
         'password' => 'required'
       ]);
 
-      if (!Hash::check($request->password, $user->password)) {
+      if (checkUserPassword($request->password, $user->password)) {
         return response()->json([
           'success' => false,
           'message' => 'Senha incorreta!'

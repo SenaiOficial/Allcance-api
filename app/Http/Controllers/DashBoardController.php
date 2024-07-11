@@ -17,10 +17,10 @@ class DashBoardController extends Controller
     $this->pcdsReport = $pcdsReport;
   }
 
-  public function getPcdsReport()
+  public function getPcdsReport(string $location = null)
   {
     try {
-      $result = $this->pcdsReport->getReport();
+      $result = $this->pcdsReport->getReport($location);
 
       return response()->json($result);
     } catch (\Throwable $th) {
@@ -36,7 +36,7 @@ class DashBoardController extends Controller
   public static function getLocations()
   {
     try {
-      $response = Cache::remember('pcds_report', Carbon::now()->addDay(), function () {
+      $response = Cache::remember('neighborhoods', Carbon::now()->addDay(), function () {
         return UserPcd::query()
           ->select('neighborhood')
           ->distinct()

@@ -17,7 +17,8 @@ class BaseService
     } else {
       $info = [
         'cpf' => $user->cpf,
-        'type' => $type
+        'type' => $type,
+        'pcd' => $user->getGuard() === 'api'
       ];
     }
 

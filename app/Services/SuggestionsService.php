@@ -20,11 +20,13 @@ class SuggestionsService
   {
     $user = $this->user;
     $type = $user->getTable();
-    $postValidate = $this->validateTimePost($type, $user->id);
 
     try {
-      if ($postValidate) {
-        return response()->json(['message' => 'Você já fez uma postagem hoje, tente novamente outro dia.'], 400);
+      if ($this->validateTimePost($type, $user->id)) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Você já fez uma postagem hoje, tente novamente outro dia.'
+        ], 400);
       }
 
       $content = $request->validate(['content' => 'required|string|max:1000']);
@@ -36,40 +38,78 @@ class SuggestionsService
         'user' => $user->first_name ?? $user->institution_name
       ]);
 
-      return response()->json(['message' => 'Sua sugestão foi enviada com sucesso!'], 200);
+      return response()->json([
+        'success' => true,
+        'message' => 'Sua sugestão foi enviada com sucesso!'
+      ]);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 400);
+      return response()->json($e->getMessage(), 500);
     }
   }
 
-  public function update(Request $request, $id)
+  public function update($id)
   {
-    $user = $this->user;
+    try {
+      Suggestions::find($id)
+        ->update(['approved' => true]);
 
-    if ($user->is_admin) {
-      $suggestion = Suggestions::find($id);
-
-      $suggestion->update(['approved' => true]);
-      $suggestion->save();
-
-      return response()->json(['message' => 'Sugestão atualizada com sucesso!']);
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+      return response()->json([
+        'success' => true,
+        'message' => 'Sugestão atualizada com sucesso!'
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'erro' => $e->getMessage()
+      ], 500);
     }
   }
 
-  public function delete(Request $request, $id)
+  public function delete($id)
   {
-    $user = $this->user;
+    try {
+      Suggestions::destroy($id);
 
-    if ($user->is_admin) {
-      $suggestion = Suggestions::find($id);
+      return response()->json([
+        'success' => true,
+        'message' => 'Sugestão excluída com sucesso!'
+      ]);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'erro' => $e->getMessage()
+      ], 500);
+    }
+  }
 
-      $suggestion->delete();
+  private function showSuggestions($approved)
+  {
+    try {
+      $suggestions = Suggestions::query()
+        ->where('approved', $approved)
+        ->get();
 
-      return response()->json(['message' => 'Sugestão excluída com sucesso!'], 200);
-    } else {
-      return response()->json(['error' => 'Usuário não autorizado!'], 401);
+      foreach ($suggestions as $suggestion) {
+        $formattedSuggestions[] = [
+          'id' => $suggestion->id,
+          'user' => $suggestion->user,
+          'content' => $suggestion->content
+        ];
+      }
+
+      if (!isset($suggestions)) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Nenhuma sugestão encontrada'
+        ], 404);
+      }
+
+      return response()->json([
+        'success' => true,
+        'suggestions' => $formattedSuggestions
+      ]);
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 500);
     }
   }
 
@@ -83,34 +123,7 @@ class SuggestionsService
     return $this->showSuggestions(false);
   }
 
-  private function showSuggestions($approved)
-  {
-    try {
-      $suggestions = Suggestions::where('approved', $approved)->get();
-
-      foreach ($suggestions as $suggestion) {
-        $formattedSuggestions[] = [
-          'id' => $suggestion->id,
-          'user' => $suggestion->user,
-          'content' => $suggestion->content,
-          'published_at' => Carbon::parse($suggestion->created_at)->format('d/m')
-        ];
-      }
-
-      if (!$suggestions) {
-        return response()->json([
-          'success' => false,
-          'message' => 'Nenhuma sugestão encontrada'
-        ], 404);
-      }
-
-      return response()->json(['suggestions' => $formattedSuggestions]);
-    } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 400);
-    }
-  }
-
-  private function validateTimePost($type, $user_id): bool
+  private function validateTimePost(string $type, int $user_id): bool
   {
     $post = DB::table('suggestions')
       ->where('user_id', '=', $user_id)
