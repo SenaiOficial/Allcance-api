@@ -35,16 +35,6 @@ class FeedsController extends Controller
     return $this->feedsService->delete($request, $id);
   }
 
-  public function getRanking()
-  {
-    return $this->feedsService->getHighlightsInstitutions();
-  }
-
-  public function getPostByInstitution($institution)
-  {
-    return $this->feedsService->getPostByInstitution($institution);
-  }
-
     public function cleanCache()
   {
     $this->feedsService->cleanCacheFeeds();

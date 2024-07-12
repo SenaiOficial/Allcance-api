@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Storage;
 class FeedsService
 {
   protected $cacheFeeds = 'feeds-cache';
-  protected $cacheRanking = 'rank-cache';
   protected $storage;
   protected $user;
 
@@ -24,29 +23,64 @@ class FeedsService
     $this->user = auth('admin')->user();
   }
 
-  protected function posts()
+  private function queryPosts()
   {
-    return Feeds::all();
+    $users = Feeds::query()
+      ->select(
+        'admin_user_id',
+        'admin_user.profile_photo',
+        'admin_user.institution_name',
+        DB::raw('count(*) as post_count'),
+        DB::raw('@rank := @rank + 1 as position'),
+      )
+      ->join(DB::raw('(SELECT @rank := 0) as r'), function ($join) {
+        $join->on(DB::raw('1'), DB::raw('1'));
+      })
+      ->join('admin_user', 'admin_user.id', '=', 'feeds.admin_user_id')
+      ->groupBy('admin_user_id')
+      ->orderByDesc('post_count')
+      ->get();
+
+    $posts = Feeds::all();
+
+    return [
+      'users' => $users,
+      'posts' => $posts
+    ];
   }
 
   public function get()
   {
-    $formattedPosts = Cache::remember($this->cacheFeeds, Carbon::now()->addWeek(), function () {
-      $posts = $this->posts();
-      $formattedPosts = [];
+    $posts = Cache::remember($this->cacheFeeds, Carbon::now()->addWeek(), function () {
+      $query = $this->queryPosts();
+      $posts = $query['posts'];
+      $users = $query['users'];
+      $arrPosts = [];
+      $ranking = [];
+
+      foreach ($users as $user) {
+        $ranking[] = [
+          'position' => $user->position,
+          'profile_photo' => $user->profile_photo,
+          'user_name' => $user->institution_name,
+        ];
+      }
 
       foreach ($posts as $post) {
-        $formattedPosts[] = (object) array_merge($post->toArray(), [
-          'image' => $this->storage . $post->image,
+        $arrPosts[] = (object) array_merge($post->toArray(), [
+          'image' => $post->image,
           'time' => 'Publicado ' . Carbon::parse($post->published_at)->format('d/m/Y \à\s H:i'),
           'cnpj' => $post->adminUser->cnpj
-      ]);
-    }
+        ]);
+      }
 
-      return $formattedPosts;
+      return [
+        'ranking' => $ranking,
+        'posts' => $arrPosts
+      ];
     });
 
-    return response()->json($formattedPosts, 200, [], JSON_UNESCAPED_SLASHES);
+    return response()->json($posts, 200, [], JSON_UNESCAPED_SLASHES);
   }
 
   public function store($request)
@@ -130,59 +164,46 @@ class FeedsService
     }
   }
 
-  public function delete(Request $request, $id)
+  public function delete($request)
   {
     $user = $this->user;
 
-    $this->unauthorized($user);
+    try {
+      $request->validate([
+        'id' => 'required|integer'
+      ]);
 
-    $post = Feeds::find($id);
-    $post->delete();
+      $post = Feeds::query()
+        ->select('id')
+        ->where($request->id, 'id')
+        ->first();
 
-    $this->cleanCacheFeeds();
+      if ($post->admin_user_id !== $user->id) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Você não tem permissão para deletar este post!'
+        ], 401);
+      } 
 
-    return response()->json(['message' => 'Post apagado com sucesso!'], 200);
-  }
+      $post->delete();
 
-  public function getHighlightsInstitutions()
-  {
-    $institutions = Cache::remember($this->cacheRanking, Carbon::now()->addWeek(), function () {
-      $institutionsUsers = Feeds::select(
-        'admin_user_id',
-        DB::raw('count(*) as post_count'),
-        DB::raw('@rank := @rank + 1 as position')
-      )->join(DB::raw('(SELECT @rank := 0) as r'), function ($join) {
-        $join->on(DB::raw('1'), DB::raw('1'));
-      })
-        ->groupBy('admin_user_id')
-        ->orderByDesc('post_count')
-        ->get();
+      $this->cleanCacheFeeds();
 
-      $institutions = [];
-      foreach ($institutionsUsers as $institutionsUser) {
-        $user = UserAdmin::find($institutionsUser->admin_user_id);
-        $institutions[] = [
-          'position' => $institutionsUser->position,
-          'profile_photo' => $user->profile_photo,
-          'user_name' => $user->institution_name,
-        ];
-      }
-
-      return $institutions;
-    });
-
-    return response()->json($institutions, 200);
-  }
-
-  public function getPostByInstitution($institution)
-  {
-    return Feeds::all()->where('institution_name', '=', $institution);
+      return response()->json([
+        'success' => true,
+        'message' => 'Post apagado com sucesso!'
+      ], 200);
+    } catch (\Exception $e) {
+      return response()->json([
+        'success' => false,
+        'error' => $e->getMessage()
+      ], 500);
+    }
   }
 
   public function cleanCacheFeeds()
   {
     Cache::forget($this->cacheFeeds);
-    Cache::forget($this->cacheRanking);
   }
 
   private function unauthorized($user)
