@@ -12,7 +12,7 @@ class UserStandar extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $guard = 'standar';
+    public const GUARD = 'standar';
     protected $table = 'standar_user';
 
     protected $fillable = [
@@ -58,7 +58,7 @@ class UserStandar extends Authenticatable implements JWTSubject
 
     public function getGuard()
     {
-        return $this->guard;
+        return self::GUARD;
     }
 
     public function configs()

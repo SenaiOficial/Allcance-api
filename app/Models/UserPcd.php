@@ -11,7 +11,7 @@ class UserPcd extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $guard = 'api';
+    public const GUARD = 'api';
     protected $table = 'pcd_users';
     protected $fillable = [
         'first_name',
@@ -74,7 +74,7 @@ class UserPcd extends Authenticatable implements JWTSubject
 
     public function getGuard()
     {
-        return $this->guard;
+        return self::GUARD;
     }
 
     public function deficiencyTypes()
