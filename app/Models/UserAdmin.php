@@ -12,7 +12,7 @@ class UserAdmin extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
 
-    protected $guard = 'admin';
+    public const GUARD = 'admin';
     protected $table = 'admin_user';
 
     protected $fillable = [
@@ -50,7 +50,7 @@ class UserAdmin extends Authenticatable implements JWTSubject
 
     public function getGuard()
     {
-        return $this->guard;
+        return self::GUARD;
     }
 
     public function configs()

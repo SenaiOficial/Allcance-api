@@ -3,10 +3,8 @@
 namespace App\Services;
 
 use App\Models\Feeds;
-use App\Models\UserAdmin;
 use Carbon\Carbon;
 use Dotenv\Exception\ValidationException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -30,12 +28,8 @@ class FeedsService
         'admin_user_id',
         'admin_user.profile_photo',
         'admin_user.institution_name',
-        DB::raw('count(*) as post_count'),
-        DB::raw('@rank := @rank + 1 as position'),
+        DB::raw('count(*) as post_count')
       )
-      ->join(DB::raw('(SELECT @rank := 0) as r'), function ($join) {
-        $join->on(DB::raw('1'), DB::raw('1'));
-      })
       ->join('admin_user', 'admin_user.id', '=', 'feeds.admin_user_id')
       ->groupBy('admin_user_id')
       ->orderByDesc('post_count')
@@ -57,10 +51,11 @@ class FeedsService
       $users = $query['users'];
       $arrPosts = [];
       $ranking = [];
+      $position = 1;
 
       foreach ($users as $user) {
         $ranking[] = [
-          'position' => $user->position,
+          'position' => $position++,
           'profile_photo' => $user->profile_photo,
           'user_name' => $user->institution_name,
         ];
@@ -86,8 +81,6 @@ class FeedsService
   public function store($request)
   {
     $user = $this->user;
-
-    $this->unauthorized($user);
 
     try {
       $request->validated();
@@ -130,8 +123,6 @@ class FeedsService
   {
     $user = $this->user;
 
-    $this->unauthorized($user);
-
     try {
       $data = $request->validate([
         'is_event',
@@ -143,15 +134,22 @@ class FeedsService
         'image',
       ]);
 
-      $feedQuery = Feeds::where('id', $id);
+      $post = Feeds::query()
+        ->select('id')
+        ->where($id, 'id')
+        ->first();
 
-      if (!$user->is_admin) {
-        $feedQuery->where('admin_user_id', $user->id);
+      if ($post->admin_user_id !== $user->id) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Você não tem permissão para deletar este post!'
+        ], 401);
       }
 
-      $feed = $feedQuery->firstOrFail();
+      $post->update($data);
+      
+      $this->cleanCacheFeeds();
 
-      $feed->update($data);
       return response()->json([
         'success' => true,
         'message' => 'Post atualizados com sucesso!'
@@ -183,7 +181,7 @@ class FeedsService
           'success' => false,
           'message' => 'Você não tem permissão para deletar este post!'
         ], 401);
-      } 
+      }
 
       $post->delete();
 
