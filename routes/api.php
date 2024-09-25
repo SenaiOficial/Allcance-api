@@ -26,7 +26,7 @@ Route::get('/docker-health-check', function () {
 
 Route::middleware(['basic'])->group(function () {
     Route::prefix('dashboards')->group(function () {
-        Route::get('/generate/{location?}', [DashBoardController::class, 'getPcdsReport']);
+        Route::get('/generate', [DashBoardController::class, 'getPcdsReport']);
         Route::get('/locations', [DashBoardController::class, 'getLocations']);
     });
 });
