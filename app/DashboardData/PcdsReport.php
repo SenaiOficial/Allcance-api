@@ -7,30 +7,33 @@ use Carbon\Carbon;
 
 class PcdsReport extends DashboardService
 {
-  protected $cacheTime;
+  private $repository;
+  private $cacheKeyPublic;
 
-  public function __construct()
+  public function __construct(ReportRepository $repository)
   {
-    $this->cacheTime = Carbon::now()->addDay();
+    $this->repository = $repository;
   }
 
-  public function getReport(string $location = null)
+  public function getReport(string $location = null): mixed
   {
     $cacheKey = 'dashboard-public-report-' . $location;
 
-    $report = Cache::remember($cacheKey, $this->cacheTime, function () use ($location) {
-      return ReportRepository::getPublicDashReport($location);
-    });
-    
-    $totalCount = $report->sum('value');
+    if (config('app.env') !== 'production') {
+      $report = $this->repository::getPublicDashReport($location);
+    } else {
+      $report = Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($location) {
+        return $this->repository::getPublicDashReport($location);
+      });
+    }
 
-    $results = $report->map(function ($item) use ($totalCount) {
-      $item->percentage = $totalCount > 0 ? (int) floor(($item->value / $totalCount) * 100) : 0;
+    $count = $report->sum('value');
+
+    $results = $report->map(function ($item) use ($count) {
+      $item->percentage = $count > 0 ? (int) floor(($item->value / $count) * 100) : 0;
       return $item;
     });
 
-    $groupedResults = $results->groupBy('deficiency_type');
-
-    return $groupedResults;
+    return $results->groupBy('deficiency_type');
   }
 }
