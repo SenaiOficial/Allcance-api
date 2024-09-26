@@ -8,7 +8,6 @@ use Carbon\Carbon;
 class PcdsReport extends DashboardService
 {
   private $repository;
-  private $cacheKeyPublic;
 
   public function __construct(ReportRepository $repository)
   {
