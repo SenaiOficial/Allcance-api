@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->foreign('deficiency_types_id')
                   ->references('id')
-                  ->on('deficiencyd_types')
+                  ->on('deficiency_types')
                   ->onDelete('CASCADE')
                   ->onUpdate('CASCADE');
         });
