@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DeficienciesSeeder extends Seeder
+class DeficiencySeeder extends Seeder
 {
     public function run()
     {
@@ -49,7 +49,6 @@ class DeficienciesSeeder extends Seeder
             ['description' => 'Diabete', 'deficiency_types_id' => $deficiencyTypes['Crônicas Degenerativa']->id],
         ];
 
-        // Insere as deficiências no banco de dados
         DB::table('deficiencies')->insert($deficiencies);
     }
 }

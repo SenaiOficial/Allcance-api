@@ -2,112 +2,37 @@
 
 namespace App\DashboardData;
 
-use App\Models\UserPcd;
 use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
 
 class PcdsReport extends DashboardService
 {
-  protected $cacheKey = 'pcds_report';
-  protected $cacheTime;
+  private $repository;
 
-  public function __construct()
+  public function __construct(ReportRepository $repository)
   {
-    $this->cacheTime = Carbon::now()->addDay();
+    $this->repository = $repository;
   }
 
-  public function getReport(string $location = null): array
+  public function getReport(string $location = null): mixed
   {
-    $cachedData = Cache::get($this->cacheKey);
+    $cacheKey = 'dashboard-public-report-' . $location;
 
-    if (!$cachedData) {
-      $pcdsByNeighborhood = UserPcd::select('neighborhood', 'deficiency_types.description',
-        DB::raw('COUNT(DISTINCT pcd_users.id) as count'))
-        ->join('pcd_user_deficiency', 'pcd_users.id', '=', 'pcd_user_deficiency.pcd_user_id')
-        ->join('deficiency_types', 'pcd_user_deficiency.deficiency_types_id', '=', 'deficiency_types.id')
-        ->groupBy('neighborhood', 'deficiency_types.description')
-        ->orderBy('neighborhood')
-        ->orderBy('description')
-        ->get()
-        ->groupBy('neighborhood')
-        ->map(function ($group) {
-          return $group->pluck('count', 'description');
-        });
-
-      $cachedData = $this->calculate($pcdsByNeighborhood);
-      Cache::put($this->cacheKey, $cachedData, $this->cacheTime);
-    }
-
-    if (isset($location)) {
-      $cachedData = array_filter($cachedData, function ($item) use ($location) {
-        return stripos($item['title'], $location) !== false;
-      });
+    if (config('app.env') !== 'production') {
+      $report = $this->repository::getPublicDashReport($location);
     } else {
-      $cachedData = $this->calculateTotal($cachedData);
+      $report = Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($location) {
+        return $this->repository::getPublicDashReport($location);
+      });
     }
 
-    return $cachedData;
-  }
+    $count = $report->sum('value');
 
-  private function calculate($pcdsByNeighborhood): array
-  {
-    $reportData = [];
+    $results = $report->map(function ($item) use ($count) {
+      $item->percentage = $count > 0 ? (int) floor(($item->value / $count) * 100) : 0;
+      return $item;
+    });
 
-    foreach ($pcdsByNeighborhood as $neighborhood => $pcds) {
-      $totalCount = array_sum($pcds->all());
-      $data = [];
-
-      foreach ($pcds as $pcd => $count) {
-        $percentage = ($count / $totalCount) * 100;
-
-        $data[] = [
-          'name' => $pcd,
-          'percentage' => intval($percentage),
-          'value' => $count,
-        ];
-      }
-
-      $reportData[] = [
-        'title' => $neighborhood,
-        'data' => $data,
-      ];
-    }
-
-    return $reportData;
-  }
-
-  private function calculateTotal($reportData): array
-  {
-    $totalCounts = [];
-    $totalSum = 0;
-
-    foreach ($reportData as $report) {
-      foreach ($report['data'] as $data) {
-        if (isset($totalCounts[$data['name']])) {
-          $totalCounts[$data['name']] += $data['value'];
-        } else {
-          $totalCounts[$data['name']] = $data['value'];
-        }
-        $totalSum += $data['value'];
-      }
-    }
-
-    $totalData = [];
-    foreach ($totalCounts as $name => $count) {
-      $percentage = ($count / $totalSum) * 100;
-      $totalData[] = [
-        'name' => $name,
-        'percentage' => intval($percentage),
-        'value' => $count,
-      ];
-    }
-
-    return [
-      [
-        'title' => 'Valores Total',
-        'data' => $totalData,
-      ]
-    ];
+    return $results->groupBy('deficiency_type');
   }
 }

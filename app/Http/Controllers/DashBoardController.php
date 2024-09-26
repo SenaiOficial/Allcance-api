@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\DashboardData\PcdsReport;
 use App\Models\UserPcd;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -17,10 +18,10 @@ class DashBoardController extends Controller
     $this->pcdsReport = $pcdsReport;
   }
 
-  public function getPcdsReport(string $location = null)
+  public function getPcdsReport(Request $request)
   {
     try {
-      $result = $this->pcdsReport->getReport($location);
+      $result = $this->pcdsReport->getReport($request->location);
 
       return response()->json($result);
     } catch (\Throwable $th) {
