@@ -12,17 +12,15 @@ class AuthenticateBasic
    */
   public function handle($request, Closure $next)
   {
-    $AUTH_USER = env('SHIELD_USER');
-    $AUTH_PASS = env('SHIELD_PASSWORD');
-
     $request->headers->set('Cache-Control', 'no-cache, must-revalidate, max-age=0');
 
     $credentials = $request->getUser() && $request->getPassword();
 
-    if (!$credentials || $request->getUser() !== $AUTH_USER || $request->getPassword() !== $AUTH_PASS) {
+    if (!$credentials || $request->getUser() !== config('auth.basic.shield_user') || $request->getPassword() !== config('auth.basic.shield_password')) {
       return response('Not Authorized', 401)
         ->header('WWW-Authenticate', 'Basic realm="Access denied"');
     }
+
     return $next($request);
   }
 }
