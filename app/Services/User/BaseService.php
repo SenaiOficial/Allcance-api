@@ -6,8 +6,6 @@ use App\Models\UserAdmin;
 
 class BaseService
 {
-  protected $admGuard = UserAdmin::GUARD;
-
   protected function getUserInfos($user)
   {
     $type = $this->getUserType($user);
@@ -22,7 +20,7 @@ class BaseService
       $info = [
         'cpf' => $user->cpf,
         'type' => $type,
-        'pcd' => $user->getGuard() === $this->admGuard
+        'pcd' => $user->getGuard() === UserAdmin::GUARD
       ];
     }
 
@@ -33,7 +31,7 @@ class BaseService
   {
     $type = 'default';
 
-    if ($user->getGuard() === $this->admGuard) {
+    if ($user->getGuard() === UserAdmin::GUARD) {
       $type = $user->is_admin ? $user->getGuard() : 'institution';
     }
 

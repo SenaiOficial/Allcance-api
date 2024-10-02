@@ -45,7 +45,11 @@ class LoginService extends BaseService
 
   public function logout()
   {
-    if (auth($this->guard)->check()) auth($this->guard)->logout();
+    $auth = auth($this->guard);
+
+    if (!$auth) return response('Nenhum usuário logado', 404);
+
+    if ($auth->check()) $auth->logout();
 
     return response()->json(['message' => 'Sessão finalizada'], 200);
   }

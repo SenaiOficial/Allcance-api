@@ -42,13 +42,16 @@ class RegisterService extends BaseService
       $token = auth()->guard($user->getGuard())->login($user);
 
       return response()->json([
-        'status' => 'success',
+        'success' => true,
         'message' => 'Sessão iniciada',
         'access_token' => $token,
         'user' => $this->getUserInfos($user)
       ]);
     } catch (\Exception $e) {
-      return response()->json(['errors' => $e->getMessage()], 400);
+      return response()->json([
+        'success' => false,
+        'errors' => $e->getMessage()
+      ], 400);
     }
   }
 

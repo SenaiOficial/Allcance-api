@@ -13,6 +13,7 @@ class UserAdmin extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     public const GUARD = 'admin';
+
     protected $table = 'admin_user';
 
     protected $fillable = [

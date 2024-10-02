@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\InstitutionalToken;
+use Illuminate\Support\Str;
 
 class TokenController extends Controller
 {
@@ -17,7 +18,7 @@ class TokenController extends Controller
     public function generateToken(Request $request)
     {
         $user = $this->user;
-        $token = makeRandomToken();
+        $token = Str::uuid();
 
         try {
             InstitutionalToken::create([

@@ -13,6 +13,7 @@ class UserStandar extends Authenticatable implements JWTSubject
     use HasFactory, Notifiable;
 
     public const GUARD = 'standar';
+
     protected $table = 'standar_user';
 
     protected $fillable = [
