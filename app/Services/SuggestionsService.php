@@ -50,8 +50,11 @@ class SuggestionsService
   public function update($id)
   {
     try {
-      Suggestions::find($id)
-        ->update(['approved' => true]);
+      $suggestion = Suggestions::find($id);
+      
+      if (!$suggestion) return response('Sugestão não encontrada!', 404);
+      
+      $suggestion->update(['approved' => true]);
 
       return response()->json([
         'success' => true,
@@ -68,7 +71,11 @@ class SuggestionsService
   public function delete($id)
   {
     try {
-      Suggestions::destroy($id);
+      $suggestion = Suggestions::find($id);
+
+      if (!$suggestion) return response('Sugestão não encontrada!', 404);
+
+      $suggestion->delete();
 
       return response()->json([
         'success' => true,

@@ -19,14 +19,14 @@ class SuggestionsController extends Controller
         return $this->suggestionsService->store($request);
     }
 
-    public function update(Request $request, $id)
+    public function update($id)
     {
-        return $this->suggestionsService->update($request, $id);
+        return $this->suggestionsService->update($id);
     }
 
-    public function delete(Request $request, $id)
+    public function delete($id)
     {
-        return $this->suggestionsService->delete($request, $id);
+        return $this->suggestionsService->delete($id);
     }
 
     public function showApproved()
