@@ -96,11 +96,12 @@ class SuggestionsService
         ->where('approved', $approved)
         ->get();
 
-      foreach ($suggestions as $suggestion) {
-        $formattedSuggestions[] = [
+        foreach ($suggestions as $suggestion) {
+          $formattedSuggestions[] = [
           'id' => $suggestion->id,
           'user' => $suggestion->user,
-          'content' => $suggestion->content
+          'content' => $suggestion->content,
+          'created_at' => Carbon::parse($suggestion->created_at)->format('d/m/Y')
         ];
       }
 
