@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\User;
+namespace App\Services\User;
 
 use App\Models\UserAdmin;
 

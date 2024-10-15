@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Http\User\SuperAdminService;
+use App\Services\User\SuperAdminService;
 use App\Models\UserAdmin;
 
 class InstitutionService extends SuperAdminService
