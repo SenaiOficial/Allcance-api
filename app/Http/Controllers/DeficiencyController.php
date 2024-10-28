@@ -22,10 +22,23 @@ class DeficiencyController extends Controller
 
     return response()->json($deficiencyTypes);
   }
-  
-  public function get()
+
+  public function get(Request $request)
   {
     $deficiency = Deficiency::all(['id', 'description']);
+
+    if ($request->type) {
+      $deficiency = Deficiency::query()
+        ->select('deficiency.id', 'deficiency.description')
+        ->join('deficiency_to_deficiency_types', 'deficiency.id', '=', 'deficiency_to_deficiency_types.deficiency_id')
+        ->join('deficiency_types', 'deficiency_to_deficiency_types.deficiency_types_id', '=', 'deficiency_types.id')
+        ->where('deficiency_types.description', $request->type)
+        ->get();
+    }
+
+    if (!$request->type || $deficiency->isEmpty()) {
+      $deficiency = Deficiency::all(['id', 'description']);
+    }
 
     return response()->json($deficiency);
   }
