@@ -18,21 +18,38 @@ class PcdsReport extends DashboardService
   {
     $cacheKey = 'dashboard-public-report-' . $location;
 
-    if (config('app.env') !== 'production') {
-      $report = $this->repository::getPublicDashReport($location);
-    } else {
-      $report = Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($location) {
+    $report = config('app.env') !== 'production'
+      ? $this->repository::getPublicDashReport($location)
+      : Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($location) {
         return $this->repository::getPublicDashReport($location);
       });
-    }
 
     $count = $report->sum('value');
 
     $results = $report->map(function ($item) use ($count) {
-      $item->percentage = $count > 0 ? (int) floor(($item->value / $count) * 100) : 0;
-      return $item;
+      return [
+        'deficiency_type' => $item->deficiency_type,
+        'deficiency_type_id' => $item->deficiency_type_id,
+        'deficiency' => $item->deficiency,
+        'value' => $item->value,
+        'percentage' => $count > 0 ? (int) floor(($item->value / $count) * 100) : 0
+      ];
     });
 
-    return $results->groupBy('deficiency_type');
+    $result = $results->groupBy('deficiency_type')->map(function ($group, $type) {
+      return [
+        'type' => $type,
+        'type_id' => $group->first()['deficiency_type_id'],
+        'conditions' => $group->map(function ($item) {
+          return [
+            'name' => $item['deficiency'],
+            'value' => $item['value'],
+            'percentage' => $item['percentage']
+          ];
+        })->values()->toArray()
+      ];
+    })->values()->toArray();
+
+    return $result;
   }
 }

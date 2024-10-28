@@ -12,6 +12,7 @@ class ReportRepository
       ->select(
         'deficiency_types.description AS deficiency_type',
         'deficiency_types.id AS deficiency_type_id',
+        'deficiency.description AS deficiency',
         DB::raw('COUNT(DISTINCT pcd_users.id) AS value')
       )
       ->join('pcd_user_deficiency', 'pcd_users.id', '=', 'pcd_user_deficiency.pcd_user_id')
@@ -26,7 +27,8 @@ class ReportRepository
     return $query
       ->groupBy(
         'deficiency_types.description',
-        'deficiency_types.id'
+        'deficiency_types.id',
+        'deficiency.description'
       )
       ->orderBy('deficiency_types.description', 'ASC')
       ->get();

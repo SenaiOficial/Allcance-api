@@ -24,12 +24,12 @@ Route::get('/docker-health-check', function () {
     return response('ok', 200);
 });
 
-Route::middleware(['basic'])->group(function () {
+// Route::middleware(['basic'])->group(function () {
     Route::prefix('dashboards')->group(function () {
         Route::get('/generate', [DashBoardController::class, 'getPcdsReport']);
         Route::get('/locations', [DashBoardController::class, 'getLocations']);
     });
-});
+// });
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/get-user', [UserController::class, 'me']);
