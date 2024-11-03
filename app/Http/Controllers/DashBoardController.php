@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\DashboardData\PcdsReport;
-use App\Models\UserPcd;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -21,7 +20,11 @@ class DashBoardController extends Controller
   public function getPcdsReport(Request $request)
   {
     try {
-      $result = $this->pcdsReport->getReport($request->location);
+      $state = $request->state;
+      $neighborhood = $request->neighborhood;
+      $type_pcd = $request->type_pcd;
+
+      $result = $this->pcdsReport->getReport($state, $neighborhood, $type_pcd);
 
       return response()->json($result);
     } catch (\Throwable $th) {
@@ -34,21 +37,17 @@ class DashBoardController extends Controller
     }
   }
 
-  public static function getLocations()
+  public function getLocations(Request $request)
   {
     try {
-      $response = Cache::remember('neighborhoods', Carbon::now()->addDay(), function () {
-        return UserPcd::query()
-          ->select('neighborhood')
-          ->distinct()
-          ->get();
-      });
+      $state = $request->state;
+      $city = $request->city;
 
-      $neighborhoods = $response->pluck('neighborhood');
+      $result = $this->pcdsReport->getLocationsOptions($state, $city);
 
       return response()->json([
         'success' => true,
-        'options' => $neighborhoods
+        'options' => $result
       ]);
     } catch (\Exception $e) {
       return response()->json([
