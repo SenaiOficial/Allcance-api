@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 
 class ReportRepository
 {
-  public static function getPublicDashReport($state = null, $neighborhood = null, $type_pcd = null)
+  public static function getPublicDashReport($state = null, $city = null, $neighborhood = null, $type_pcd = null)
   {
     $query = DB::table('pcd_users')
       ->select(
@@ -22,6 +22,9 @@ class ReportRepository
 
       if ($state) {
         $query->where('pcd_users.state', $state);
+      }
+      if ($city) {
+        $query->where('pcd_users.city', $city);
       }
 
       if ($neighborhood) {

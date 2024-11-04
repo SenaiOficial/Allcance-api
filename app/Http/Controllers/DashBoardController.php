@@ -21,10 +21,11 @@ class DashBoardController extends Controller
   {
     try {
       $state = $request->state;
+      $city = $request->city;
       $neighborhood = $request->neighborhood;
       $type_pcd = $request->type_pcd;
 
-      $result = $this->pcdsReport->getReport($state, $neighborhood, $type_pcd);
+      $result = $this->pcdsReport->getReport($state, $city, $neighborhood, $type_pcd);
 
       return response()->json($result);
     } catch (\Throwable $th) {

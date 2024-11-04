@@ -14,14 +14,14 @@ class PcdsReport extends DashboardService
     $this->repository = $repository;
   }
 
-  public function getReport(string $state = null, string $neighborhood = null, string $type_pcd = null): mixed
+  public function getReport(string $state = null, string $city = null, string $neighborhood = null, string $type_pcd = null): mixed
   {
-    $cacheKey = 'dashboard-public-report-' . $state . '-' . $neighborhood . '-' . $type_pcd;
+    $cacheKey = 'dashboard-public-report-' . $state . '-' . $city . '-' . $neighborhood . '-' . $type_pcd;
 
     $report = config('app.env') !== 'production'
-      ? $this->repository::getPublicDashReport($state, $neighborhood, $type_pcd)
-      : Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($state, $neighborhood, $type_pcd) {
-        return $this->repository::getPublicDashReport($state, $neighborhood, $type_pcd);
+      ? $this->repository::getPublicDashReport($state, $city, $neighborhood, $type_pcd)
+      : Cache::remember($cacheKey, Carbon::now()->addDay(), function () use ($state, $city, $neighborhood, $type_pcd) {
+        return $this->repository::getPublicDashReport($state, $city, $neighborhood, $type_pcd);
       });
 
     $results = $report->map(function ($item) {
