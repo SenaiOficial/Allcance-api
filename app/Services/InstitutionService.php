@@ -93,7 +93,8 @@ class InstitutionService extends SuperAdminService
         'description',
         'image',
         'event_date',
-        'event_time'
+        'event_time',
+        'admin_user.institution_name'
       )
       ->join('admin_user', 'feeds.admin_user_id', '=', 'admin_user.id')
       ->where('admin_user.cnpj', $cnpj)
