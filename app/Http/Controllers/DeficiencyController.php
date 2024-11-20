@@ -32,7 +32,7 @@ class DeficiencyController extends Controller
         ->select('deficiency.id', 'deficiency.description')
         ->join('deficiency_to_deficiency_types', 'deficiency.id', '=', 'deficiency_to_deficiency_types.deficiency_id')
         ->join('deficiency_types', 'deficiency_to_deficiency_types.deficiency_types_id', '=', 'deficiency_types.id')
-        ->where('deficiency_types.description', $request->type)
+        ->where('deficiency_types.id', $request->type)
         ->get();
     }
 
