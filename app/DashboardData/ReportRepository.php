@@ -35,6 +35,8 @@ class ReportRepository
         $query->where('pcd_users.pcd_type', $type_pcd);
       }
 
+      $query->whereRaw('pcd_user_deficiency.deficiency_types_id = deficiency_types.id');
+
     return $query
       ->groupBy(
         'deficiency_types.description',
