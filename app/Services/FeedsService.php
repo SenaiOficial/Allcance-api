@@ -84,10 +84,10 @@ class FeedsService
 
     try {
       $request->validated();
-      $image = null;
+      $fileImage = null;
 
       if ($request->hasFile('image')) {
-        $image = Storage::disk('public')->put('images', $request->file('image'));
+        $fileImage = $request->file('image')->store('allcance', 's3');
       }
 
       Feeds::query()
@@ -101,7 +101,7 @@ class FeedsService
           'event_location' => $request->event_location,
           'title' => $request->title,
           'description' => $request->description,
-          'image' => 'storage/' . $image,
+          'image' => $fileImage,
           'published_at' => Carbon::now()
         ]);
 
