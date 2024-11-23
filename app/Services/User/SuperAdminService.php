@@ -19,7 +19,7 @@ class SuperAdminService
 
     try {
       $request->validate([
-        'id' => 'required|integer',
+        'cnpj' => 'required',
         'password' => 'required'
       ]);
 
@@ -30,7 +30,7 @@ class SuperAdminService
         ], 401);
       }
 
-      $institution = UserAdmin::find($request->id);
+      $institution = UserAdmin::where('cnpj', $request->cnpj)->first();
 
       if (!$institution) {
         return response()->json([
