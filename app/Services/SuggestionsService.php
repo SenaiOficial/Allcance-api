@@ -22,12 +22,12 @@ class SuggestionsService
     $type = $user->getTable();
 
     try {
-      if ($this->validateTimePost($type, $user->id)) {
+      /*if ($this->validateTimePost($type, $user->id)) {
         return response()->json([
           'success' => false,
           'message' => 'Você já fez uma postagem hoje, tente novamente outro dia.'
         ], 400);
-      }
+      }*/
 
       $content = $request->validate(['content' => 'required|string|max:1000']);
 
@@ -51,9 +51,9 @@ class SuggestionsService
   {
     try {
       $suggestion = Suggestions::find($id);
-      
+
       if (!$suggestion) return response('Sugestão não encontrada!', 404);
-      
+
       $suggestion->update(['approved' => true]);
 
       return response()->json([
