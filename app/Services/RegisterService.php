@@ -25,7 +25,7 @@ class RegisterService extends BaseService
         if ($this->validateAdminUser($validatedData)) return response()->json('Token Inválido', 401);
 
         if ($request->hasFile('profile_photo')) {
-          $validatedData['profile_photo'] = Storage::disk('public')->put('images', $request->file('profile_photo'));
+          $validatedData['profile_photo'] = $request->file('profile_photo')->store('allcance', 's3');
         }
       }
 

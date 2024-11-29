@@ -87,6 +87,7 @@ class InstitutionService extends SuperAdminService
   {
     return Feeds::query()
       ->select(
+        'feeds.id',
         'title',
         'event_location',
         'is_event',
