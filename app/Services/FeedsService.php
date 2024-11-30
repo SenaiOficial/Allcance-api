@@ -136,7 +136,7 @@ class FeedsService
 
       $post = Feeds::query()
         ->select('id')
-        ->where($id, 'id')
+        ->where('id', $id)
         ->first();
 
       if ($post->admin_user_id !== $user->id) {
