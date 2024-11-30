@@ -147,7 +147,7 @@ class FeedsService
       }
 
       $post->update($data);
-      
+
       $this->cleanCacheFeeds();
 
       return response()->json([
@@ -162,18 +162,28 @@ class FeedsService
     }
   }
 
-  public function delete($request)
+  public function delete($request, $id)
   {
     $user = $this->user;
 
     try {
-      $request->validate([
-        'id' => 'required|integer'
-      ]);
+      if (!$id) {
+        return response()->json([
+          'success' => false,
+          'message' => 'ID não informado!'
+        ], 422);
+      }
+
+      if (!is_numeric($id)) {
+        return response()->json([
+          'success' => false,
+          'message' => 'ID inválido!'
+        ], 422);
+      }
 
       $post = Feeds::query()
-        ->select('id')
-        ->where($request->id, 'id')
+        ->select('id', 'admin_user_id')
+        ->where('id', $id)
         ->first();
 
       if ($post->admin_user_id !== $user->id) {
