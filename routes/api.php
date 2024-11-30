@@ -68,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['institution'])->group(function () {
         Route::prefix('feeds')->group(function () {
             Route::post('/create-new-post', [FeedsController::class, 'store']);
-            Route::put('/update-post/{id}', [FeedsController::class, 'update']);
+            Route::post('/update-post/{id}', [FeedsController::class, 'update']);
             Route::delete('/delete-post/{id}', [FeedsController::class, 'delete']);
         });
     });

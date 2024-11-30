@@ -119,12 +119,13 @@ class FeedsService
     }
   }
 
-  public function update($request, $id)
+  public function update($request, int $id)
   {
     $user = $this->user;
+    $bucket = Storage::disk('s3');
 
     try {
-      $data = $request->validate([
+      $data = $request->only([
         'is_event',
         'event_date',
         'event_time',
@@ -134,25 +135,36 @@ class FeedsService
         'image',
       ]);
 
-      $post = Feeds::query()
-        ->select('id', 'admin_user_id')
-        ->where('id', $id)
-        ->first();
+      $post = Feeds::find($id);
+
+      if (!$post) {
+        return response()->json([
+          'success' => false,
+          'message' => 'Post não encontrado!'
+        ], 404);
+      }
 
       if ($post->admin_user_id !== $user->id) {
         return response()->json([
           'success' => false,
-          'message' => 'Você não tem permissão para deletar este post!'
+          'message' => 'Você não tem permissão para editar este post!'
         ], 401);
       }
 
-      $post->update($data);
+      if ($request->hasFile('image')) {
+        if ($bucket->exists($post->image)) {
+          $bucket->delete($post->image);
+        }
 
+        $data['image'] = $request->file('image')->store('allcance', 's3');
+      }
+
+      $post->update($data);
       $this->cleanCacheFeeds();
 
       return response()->json([
         'success' => true,
-        'message' => 'Post atualizados com sucesso!'
+        'message' => 'Post atualizado com sucesso!'
       ], 200);
     } catch (ValidationException $e) {
       return response()->json([
