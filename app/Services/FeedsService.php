@@ -135,7 +135,7 @@ class FeedsService
       ]);
 
       $post = Feeds::query()
-        ->select('id')
+        ->select('id', 'admin_user_id')
         ->where('id', $id)
         ->first();
 
